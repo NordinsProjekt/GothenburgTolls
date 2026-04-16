@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/1. Domain/">
+    <Project Path="Entities/Entities.csproj" />
+    <Project Path="Factories/Factories.csproj" />
+  </Folder>
+  <Folder Name="/2. Application/">
+    <Project Path="UseCases/UseCases.csproj" />
+  </Folder>
+  <Folder Name="/3. Infrastructure/">
+    <Project Path="EF/EF.csproj" />
+  </Folder>
+  <Folder Name="/4. Presentation/">
+    <Project Path="GothenburgTolls/GothenburgTolls.csproj" />
+  </Folder>
+  <Folder Name="/5. Tests/" />
+</Solution>
