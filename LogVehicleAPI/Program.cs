@@ -1,4 +1,7 @@
 
+using EF;
+using Microsoft.EntityFrameworkCore;
+
 namespace LogVehicleAPI;
 
 public class Program
@@ -12,6 +15,8 @@ public class Program
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        builder.Services.AddDbContextFactory<TollDbContext>(opt =>
+            opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
 
         var app = builder.Build();
 
@@ -27,11 +32,11 @@ public class Program
 
         app.UseAuthorization();
 
-        app.MapPost("/Vehicle", (HttpContext httpContext) =>
+        app.MapPost("/TollEvent", (HttpContext httpContext) =>
         {
 
         })
-        .WithName("PostVehicle");
+        .WithName("PostTollEvent");
 
         app.Run();
     }

@@ -1,4 +1,4 @@
-﻿namespace UseCases.HelperClass;
+﻿namespace Entities.Types;
 
 public partial class TollCalculator
 {

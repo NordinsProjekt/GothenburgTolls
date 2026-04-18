@@ -1,13 +1,12 @@
 ﻿using Entities.Bases;
-using Entities.Types;
 
 namespace Entities.Interfaces;
 
 public interface IVehicleRepository
 {
-    Task<Vehicle> GetAllVehicleAsync();
-    Task<Vehicle> GetVehicleByIdAsync(Guid id);
-    Task<Vehicle> GetVehicleByType(VehicleType type);
+    Task<List<Vehicle>> GetAllVehicleAsync(CancellationToken cancellationToken);
+    Task<Vehicle> GetVehicleByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<List<Vehicle>> GetVehicleByType(Type vehicleType, CancellationToken cancellationToken);
 
-    Task<Guid> CreateVehicle(Vehicle vehicle);
+    Task<Guid> CreateVehicle(Vehicle vehicle, CancellationToken cancellationToken);
 }

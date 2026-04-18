@@ -8,7 +8,7 @@ public class TollInvoice
     public DateOnly ToDay { get; }
     public decimal Sum => TollSummary.Sum(ts => ts.Amount);
 
-    protected List<DailyTollSummary> TollSummary { get; } = new();
+    public List<DailyTollSummary> TollSummary { get; } = new();
 
     private TollInvoice() { }
 
