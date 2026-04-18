@@ -1,8 +1,7 @@
-﻿using Entities.Interfaces;
+﻿using Entities.Bases;
 
 namespace Entities;
 
-public class Car : IVehicle
+public class Car : Vehicle
 {
-    public string GetVehicleType() => nameof(Car);
 }
