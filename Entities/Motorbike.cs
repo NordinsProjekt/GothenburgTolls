@@ -2,5 +2,8 @@
 
 namespace Entities;
 
-public class Motorbike : Vehicle
-{ }
+public class Motorbike(string registrationNumber) : Vehicle(registrationNumber)
+{
+    private Motorbike() : this(string.Empty)
+    { }
+}

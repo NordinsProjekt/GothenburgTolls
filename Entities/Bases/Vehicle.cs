@@ -2,14 +2,14 @@
 
 namespace Entities.Bases;
 
-public abstract class Vehicle : IVehicle
+public abstract class Vehicle(string registrationNumber) : IVehicle
 {
-    public Guid Id { get; }
+    public Guid Id { get; set; }
 
-    public string RegistrationNumber { get; }
+    public string RegistrationNumber { get; } = registrationNumber;
 
     public string GetVehicleType()
     {
-        return nameof(Vehicle);
+        return GetType().Name;
     }
 }
