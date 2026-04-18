@@ -12,7 +12,7 @@ public class TollEvent
     public Vehicle? Vehicle { get; }
 
     public Guid? DailyTollSummaryId { get; }
-    public DailyTollSummary? DailyTollSummary { get; }
+    public DailyTollSummary? DailyTollSummaries { get; }
 
     //For EF
     private TollEvent() { }
