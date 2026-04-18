@@ -9,6 +9,8 @@ public abstract class Vehicle : IVehicle
     public string RegistrationNumber { get; }
     protected List<TollEvent> TollEvents { get; } = new();
 
+
+
     public Vehicle(string registrationNumber)
     {
         RegistrationNumber = registrationNumber;
