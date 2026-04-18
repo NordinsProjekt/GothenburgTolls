@@ -1,8 +1,6 @@
-﻿using Entities.Interfaces;
+﻿using Entities.Bases;
 
 namespace Entities;
 
-public class Motorbike : IVehicle
-{
-    public string GetVehicleType() => nameof(Motorbike);
-}
+public class Motorbike : Vehicle
+{ }
