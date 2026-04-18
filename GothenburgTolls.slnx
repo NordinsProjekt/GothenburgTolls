@@ -11,6 +11,12 @@
   </Folder>
   <Folder Name="/4. Presentation/">
     <Project Path="GothenburgTolls/GothenburgTolls.csproj" />
+    <Project Path="LogVehicleAPI/LogVehicleAPI.csproj" Id="40ab7c79-2317-42de-9998-08eb85f907d2" />
   </Folder>
-  <Folder Name="/5. Tests/" />
+  <Folder Name="/5. Tests/">
+    <Project Path="Application.UseCases.Tests/Application.UseCases.Tests.csproj" Id="6fbed79b-f87b-4179-93a8-36d814e331dc" />
+    <Project Path="Domain.Factories.Tests/Domain.Factories.Tests.csproj" Id="6fa134db-c995-430a-8fb0-09986be1368a" />
+    <Project Path="Presentation.GothenburgTolls.Tests/Presentation.GothenburgTolls.Tests.csproj" Id="021ae3cc-726c-4660-b355-6b6375408320" />
+    <Project Path="Presentation.LogVehicleAPI.Tests/Presentation.LogVehicleAPI.Tests.csproj" Id="c2f65e07-31cb-43a1-be78-537d73782965" />
+  </Folder>
 </Solution>
