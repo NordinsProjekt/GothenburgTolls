@@ -7,10 +7,10 @@ public class DailyTollSummary
     public DateOnly ForDay { get; }
     public decimal Amount { get; }
 
-    public Guid? TollInvoiceId { get; set; }
-    public TollInvoice? TollInvoice { get; set; }
+    public Guid? TollInvoiceId { get; }
+    public TollInvoice? TollInvoice { get; }
 
-    protected List<TollEvent> TollEvents { get; set; } = new();
+    protected List<TollEvent> TollEvents { get; } = new();
 
     private DailyTollSummary() { }
 
