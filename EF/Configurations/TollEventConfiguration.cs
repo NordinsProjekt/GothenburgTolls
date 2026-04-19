@@ -19,7 +19,7 @@ internal class TollEventConfiguration : IEntityTypeConfiguration<TollEvent>
             .OnDelete(DeleteBehavior.Restrict);
 
         e.HasOne(te => te.DailyTollSummaries)
-            .WithMany("TollEvents")
+            .WithMany(te => te.TollEvents)
             .HasForeignKey(te => te.DailyTollSummaryId)
             .OnDelete(DeleteBehavior.SetNull);
     }
