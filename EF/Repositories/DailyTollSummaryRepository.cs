@@ -6,11 +6,12 @@ namespace EFCore.Repositories;
 
 public class DailyTollSummaryRepository(IDbContextFactory<TollDbContext> contextFactory) : IDailyTollSummaryRepository
 {
-    public async Task<Guid> CreateDailyTollSummaryAsync(DailyTollSummary dailyTollSummary, CancellationToken cancellationToken)
+    public async Task<Guid> CreateWithTollEventsAsync(DailyTollSummary dailyTollSummary, IReadOnlyList<TollEvent> tollEvents, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         await db.AddAsync(dailyTollSummary, cancellationToken);
+        db.TollEvents.UpdateRange(tollEvents);
         await db.SaveChangesAsync(cancellationToken);
 
         return dailyTollSummary.Id;

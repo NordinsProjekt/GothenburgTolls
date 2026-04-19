@@ -44,14 +44,12 @@ public class DailyTollSummaryService(
 
         DailyTollSummary summary = DailyTollSummaryFactory.Create(forDay, fee, vehicle.Id);
 
-        await dailyTollSummaryRepository.CreateDailyTollSummaryAsync(summary, cancellationToken);
-
         foreach (TollEvent tollEvent in tollEvents)
         {
             tollEvent.AssignToDailyTollSummary(summary.Id);
         }
 
-        await tollEventRepository.UpdateTollEventsAsync(tollEvents, cancellationToken);
+        await dailyTollSummaryRepository.CreateWithTollEventsAsync(summary, tollEvents, cancellationToken);
 
         return summary;
     }

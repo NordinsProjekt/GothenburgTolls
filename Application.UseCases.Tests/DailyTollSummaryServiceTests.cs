@@ -119,15 +119,15 @@ public class DailyTollSummaryServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_WithValidInput_ShouldCallCreateDailyTollSummaryOnRepository()
+    public async Task CreateAsync_WithValidInput_ShouldCallCreateWithTollEventsOnRepository()
     {
         var vehicle = SetupVehicle();
         SetupTollEvents(vehicle.Id);
 
         await _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None);
 
-        await _dailyTollSummaryRepository.Received(1).CreateDailyTollSummaryAsync(
-            Arg.Any<DailyTollSummary>(), Arg.Any<CancellationToken>());
+        await _dailyTollSummaryRepository.Received(1).CreateWithTollEventsAsync(
+            Arg.Any<DailyTollSummary>(), Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -188,15 +188,20 @@ public class DailyTollSummaryServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_WithValidInput_ShouldCallUpdateTollEventsOnRepository()
+    public async Task CreateAsync_WithValidInput_ShouldPassTollEventsToCreateWithTollEvents()
     {
         var vehicle = SetupVehicle();
-        SetupTollEvents(vehicle.Id);
+        var events = new List<TollEvent>
+        {
+            new(new DateTimeOffset(2025, 6, 16, 7, 30, 0, TimeSpan.FromHours(2)), "ZoneA", vehicle.Id)
+        };
+        _tollEventRepository.GetAllByRegistrationAsync(ValidRegNr, ValidDay, Arg.Any<CancellationToken>())
+            .Returns(events);
 
         await _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None);
 
-        await _tollEventRepository.Received(1).UpdateTollEventsAsync(
-            Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>());
+        await _dailyTollSummaryRepository.Received(1).CreateWithTollEventsAsync(
+            Arg.Any<DailyTollSummary>(), Arg.Is<IReadOnlyList<TollEvent>>(e => e.Count == 1), Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -56,11 +56,4 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
             .Take(count)
             .ToListAsync(cancellationToken);
     }
-
-    public async Task UpdateTollEventsAsync(IReadOnlyList<TollEvent> tollEvents, CancellationToken cancellationToken)
-    {
-        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
-        db.TollEvents.UpdateRange(tollEvents);
-        await db.SaveChangesAsync(cancellationToken);
     }
-}
