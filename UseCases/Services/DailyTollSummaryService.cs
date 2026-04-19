@@ -59,4 +59,15 @@ public class DailyTollSummaryService(
         ArgumentOutOfRangeException.ThrowIfEqual(vehicleId, Guid.Empty);
         return await dailyTollSummaryRepository.GetAllByVehicleIdAsync(vehicleId, cancellationToken);
     }
+
+    public async Task<List<DailyTollSummary>> GetAllUninvoicedAsync(CancellationToken cancellationToken)
+    {
+        return await dailyTollSummaryRepository.GetAllUninvoicedAsync(cancellationToken);
+    }
+
+    public async Task<List<DailyTollSummary>> GetUninvoicedByVehicleIdAsync(Guid vehicleId, CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfEqual(vehicleId, Guid.Empty);
+        return await dailyTollSummaryRepository.GetUninvoicedByVehicleIdAsync(vehicleId, cancellationToken);
+    }
 }

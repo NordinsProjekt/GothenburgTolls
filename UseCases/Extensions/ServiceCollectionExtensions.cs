@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IVehicleService, VehicleService>();
         services.AddScoped<ITollEventService, TollEventService>();
         services.AddScoped<IDailyTollSummaryService, DailyTollSummaryService>();
+        services.AddScoped<ITollInvoiceService, TollInvoiceService>();
         services.AddSingleton<ISwedishHolidayService, SwedishHolidayService>();
         services.AddSingleton<ITollRateService, GothenburgTollRateService>();
         services.AddTransient<TollCalculator>();

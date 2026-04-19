@@ -6,69 +6,84 @@
 @inject IVehicleService VehicleService
 @implements IDisposable
 
-<PageTitle>Daily Toll Summaries</PageTitle>
+<PageTitle>Daily Summaries</PageTitle>
 
-<h1>Skapa daglig avgiftssammanfattning</h1>
+<div class="page-header">
+    <h1>Daily Toll Summaries</h1>
+</div>
 
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-6">
-        <div class="mb-3">
-            <label for="regNr" class="form-label">Registreringsnummer</label>
-            <input id="regNr" class="form-control" @bind="_registrationNumber" placeholder="ABC123" />
+        <div class="card-toll">
+            <div class="card-header">Create Daily Summary</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="regNr" class="form-label fw-semibold">Registration Number</label>
+                    <input id="regNr" class="form-control" @bind="_registrationNumber" placeholder="ABC123" />
+                </div>
+                <div class="mb-3">
+                    <label for="forDay" class="form-label fw-semibold">Date</label>
+                    <input id="forDay" type="date" class="form-control" @bind="_forDay" />
+                </div>
+                <button class="btn btn-primary" @onclick="CreateSummaryAsync" disabled="@_isCreating">
+                    @(_isCreating ? "Creating..." : "Create Summary")
+                </button>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="forDay" class="form-label">Datum</label>
-            <input id="forDay" type="date" class="form-control" @bind="_forDay" />
-        </div>
-        <button class="btn btn-primary" @onclick="CreateSummaryAsync" disabled="@_isCreating">
-            @(_isCreating ? "Skapar..." : "Skapa sammanfattning")
-        </button>
     </div>
 </div>
 
 @if (_error is not null)
 {
-    <div class="alert alert-danger">@_error</div>
+    <div class="alert-toll-error p-3 mb-3">@_error</div>
 }
 
 @if (_createdSummary is not null)
 {
-    <div class="alert alert-success">
-        Sammanfattning skapad för @_createdSummary.ForDay.ToString("yyyy-MM-dd") med belopp @_createdSummary.Amount kr.
+    <div class="alert-toll-success p-3 mb-3">
+        Summary created for @_createdSummary.ForDay.ToString("yyyy-MM-dd") — Amount: <strong>@_createdSummary.Amount SEK</strong>
     </div>
 }
 
-@if (_summaries is not null)
-{
-    <h2 class="mt-4">Sammanfattningar</h2>
-
-    @if (_summaries.Count == 0)
-    {
-        <p>Inga sammanfattningar hittades.</p>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Datum</th>
-                    <th>Belopp</th>
-                    <th>Skapad</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var summary in _summaries)
-                {
+<div class="card-toll">
+    <div class="card-header">Uninvoiced Summaries</div>
+    <div class="card-body p-0">
+        @if (_summaries is null)
+        {
+            <div class="p-4 text-center text-muted">Loading...</div>
+        }
+        else if (_summaries.Count == 0)
+        {
+            <div class="empty-state">
+                <p>No uninvoiced summaries found.</p>
+            </div>
+        }
+        else
+        {
+            <table class="table table-toll mb-0">
+                <thead>
                     <tr>
-                        <td>@summary.ForDay.ToString("yyyy-MM-dd")</td>
-                        <td>@summary.Amount kr</td>
-                        <td>@summary.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <th>Registration No.</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Created</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-}
+                </thead>
+                <tbody>
+                    @foreach (var summary in _summaries)
+                    {
+                        <tr>
+                            <td><strong>@(summary.Vehicle?.RegistrationNumber ?? "-")</strong></td>
+                            <td>@summary.ForDay.ToString("yyyy-MM-dd")</td>
+                            <td><strong>@summary.Amount SEK</strong></td>
+                            <td>@summary.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
 
 @code {
     private readonly CancellationTokenSource _cts = new();
@@ -78,6 +93,24 @@
     private string? _error;
     private DailyTollSummary? _createdSummary;
     private List<DailyTollSummary>? _summaries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSummariesAsync();
+    }
+
+    private async Task LoadSummariesAsync()
+    {
+        try
+        {
+            _summaries = await DailyTollSummaryService.GetAllUninvoicedAsync(_cts.Token);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
 
     private async Task CreateSummaryAsync()
     {
@@ -90,8 +123,7 @@
             _createdSummary = await DailyTollSummaryService.CreateAsync(
                 _registrationNumber, _forDay, _cts.Token);
 
-            _summaries = await DailyTollSummaryService.GetAllByVehicleIdAsync(
-                _createdSummary.VehicleId, _cts.Token);
+            await LoadSummariesAsync();
         }
         catch (OperationCanceledException)
         {

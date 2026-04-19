@@ -1,19 +1,40 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f0f4f8;
+    color: #1e293b;
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: #0d7377;
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #0d7377;
+    border-color: #0b6265;
+}
+
+.btn-primary:hover {
+    background-color: #0b6265;
+    border-color: #095255;
+}
+
+.btn-outline-primary {
+    color: #0d7377;
+    border-color: #0d7377;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d7377;
+    color: #fff;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #14b8a6;
+}
+
+.form-control:focus {
+    border-color: #14b8a6;
 }
 
 .content {
@@ -57,4 +78,129 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+/* ── Toll Company Theme ── */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #0d7377;
+}
+
+.page-header h1 {
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.page-header .badge {
+    font-size: 0.75rem;
+}
+
+.card-toll {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    background: #fff;
+    transition: box-shadow 0.2s;
+}
+
+.card-toll:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.card-toll .card-header {
+    background: linear-gradient(135deg, #0d7377 0%, #14b8a6 100%);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    border: none;
+}
+
+.card-toll .card-body {
+    padding: 1.5rem;
+}
+
+.table-toll {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-toll thead th {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+}
+
+.table-toll tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.table-toll tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0d7377;
+    line-height: 1;
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #94a3b8;
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.alert-toll-success {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #6ee7b7;
+    border-radius: 8px;
+    color: #065f46;
+}
+
+.alert-toll-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    color: #991b1b;
 }
