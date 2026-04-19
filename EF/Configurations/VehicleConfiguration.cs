@@ -1,5 +1,5 @@
-﻿using Entities;
-using Entities.Bases;
+﻿using Entities.Bases;
+using Entities.Vehicels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,6 +20,11 @@ internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
 
         e.HasDiscriminator<string>("VehicleType")
             .HasValue<Car>(nameof(Car))
-            .HasValue<Motorbike>(nameof(Motorbike));
+            .HasValue<Motorbike>(nameof(Motorbike))
+            .HasValue<Tractor>(nameof(Tractor))
+            .HasValue<Emergency>(nameof(Emergency))
+            .HasValue<Diplomat>(nameof(Diplomat))
+            .HasValue<Foreign>(nameof(Foreign))
+            .HasValue<Military>(nameof(Military));
     }
 }

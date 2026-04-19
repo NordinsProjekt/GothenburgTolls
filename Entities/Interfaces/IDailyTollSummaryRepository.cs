@@ -1,4 +1,6 @@
-﻿namespace Entities.Interfaces;
+﻿using Entities.Tolls;
+
+namespace Entities.Interfaces;
 
 public interface IDailyTollSummaryRepository
 {

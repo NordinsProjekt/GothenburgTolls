@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Tolls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

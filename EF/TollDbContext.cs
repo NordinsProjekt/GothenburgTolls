@@ -1,5 +1,5 @@
-﻿using Entities;
-using Entities.Bases;
+﻿using Entities.Bases;
+using Entities.Tolls;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore;
