@@ -16,7 +16,7 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
         ArgumentNullException.ThrowIfNull(dates);
         if (dates.Length == 0) return 0;
 
-        if (dates.Length == 1) return CalculateSinglePassageFee(dates[0], vehicle);
+        if (dates.Length == 1) return Math.Min(CalculateSinglePassageFee(dates[0], vehicle), tollRateService.MaxDailyFee);
 
         DateTime intervalStart = dates[0];
         int intervalHighestFee = 0;
