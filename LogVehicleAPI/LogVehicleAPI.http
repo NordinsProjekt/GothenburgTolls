@@ -1,6 +1,13 @@
 @LogVehicleAPI_HostAddress = http://localhost:5030
 
-GET {{LogVehicleAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{LogVehicleAPI_HostAddress}}/TollEvent
+Content-Type: application/json
+
+{
+  "registrationNumber": "ABC123",
+  "eventDateTime": "2025-06-01T08:30:00+02:00",
+  "zone": "Backa",
+  "vehicleType": 0
+}
 
 ###

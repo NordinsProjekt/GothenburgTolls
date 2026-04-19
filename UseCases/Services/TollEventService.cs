@@ -22,4 +22,10 @@ public class TollEventService(
 
         return tollEvent;
     }
+
+    public async Task<IReadOnlyList<TollEvent>> GetRecentAsync(int count, CancellationToken cancellationToken)
+    {
+        var events = await tollEventRepository.GetRecentAsync(count, cancellationToken);
+        return events;
+    }
 }

@@ -1,0 +1,84 @@
+@page "/tollevents"
+@rendermode InteractiveServer
+@using Entities.Tolls
+@using UseCases.Interfaces
+@inject ITollEventService TollEventService
+
+<PageTitle>Toll events</PageTitle>
+
+<h1>Latest Toll Events</h1>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="LoadAsync" disabled="@_isLoading">
+        @(_isLoading ? "Laddar..." : "Uppdatera")
+    </button>
+</div>
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger">@_error</div>
+}
+
+@if (_events is null)
+{
+    <p><em>Laddar...</em></p>
+}
+else if (_events.Count == 0)
+{
+    <p>Inga registrerade passager.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tidpunkt</th>
+                <th>Zon</th>
+                <th>Registreringsnummer</th>
+                <th>Fordonstyp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in _events)
+            {
+                <tr>
+                    <td>@ev.EventDateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@ev.Zone</td>
+                    <td>@(ev.Vehicle?.RegistrationNumber ?? "-")</td>
+                    <td>@(ev.Vehicle?.GetType().Name ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private const int RecentCount = 50;
+
+    private IReadOnlyList<TollEvent>? _events;
+    private bool _isLoading;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _error = null;
+        try
+        {
+            _events = await TollEventService.GetRecentAsync(RecentCount, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}
