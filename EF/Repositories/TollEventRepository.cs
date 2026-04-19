@@ -19,11 +19,7 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        var swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
-        var dayStartLocal = eventDate.ToDateTime(TimeOnly.MinValue);
-        var nextDayStartLocal = eventDate.AddDays(1).ToDateTime(TimeOnly.MinValue);
-        var dayStart = new DateTimeOffset(dayStartLocal, swedishTimeZone.GetUtcOffset(dayStartLocal));
-        var nextDayStart = new DateTimeOffset(nextDayStartLocal, swedishTimeZone.GetUtcOffset(nextDayStartLocal));
+        var dateRange = new SwedishDateRange(eventDate);
 
         var vehicleIds = db.Vehicles
             .Where(v => v.RegistrationNumber == registrationNumber)
@@ -32,7 +28,7 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
         return await db.TollEvents.AsNoTracking()
             .Where(te => te.VehicleId != null && vehicleIds.Contains(te.VehicleId.Value))
             .Where(te => te.DailyTollSummaryId == null)
-            .Where(te => te.EventDateTime >= dayStart && te.EventDateTime < nextDayStart)
+            .Where(te => te.EventDateTime >= dateRange.Start && te.EventDateTime < dateRange.End)
             .ToListAsync(cancellationToken);
     }
 
@@ -45,11 +41,6 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
 
     public async Task<List<TollEvent>> GetRecentAsync(int count, CancellationToken cancellationToken)
     {
-        if (count <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be greater than zero.");
-        }
-
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         return await db.TollEvents.AsNoTracking()
@@ -61,11 +52,6 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
 
     public async Task<List<TollEvent>> GetUnassignedAsync(int count, CancellationToken cancellationToken)
     {
-        if (count <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be greater than zero.");
-        }
-
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         return await db.TollEvents.AsNoTracking()

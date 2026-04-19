@@ -144,20 +144,6 @@ public class TollEventRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetRecentAsync_WhenCountIsZero_ShouldThrowArgumentOutOfRangeException()
-    {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
-            _sut.GetRecentAsync(0, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task GetRecentAsync_WhenCountIsNegative_ShouldThrowArgumentOutOfRangeException()
-    {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
-            _sut.GetRecentAsync(-1, CancellationToken.None));
-    }
-
-    [Fact]
     public async Task GetRecentAsync_WhenNoEventsExist_ShouldReturnEmptyList()
     {
         var result = await _sut.GetRecentAsync(5, CancellationToken.None);
@@ -226,20 +212,6 @@ public class TollEventRepositoryTests : IDisposable
     }
 
     // --- GetUnassignedAsync ---
-
-    [Fact]
-    public async Task GetUnassignedAsync_WhenCountIsZero_ShouldThrowArgumentOutOfRangeException()
-    {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
-            _sut.GetUnassignedAsync(0, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task GetUnassignedAsync_WhenCountIsNegative_ShouldThrowArgumentOutOfRangeException()
-    {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
-            _sut.GetUnassignedAsync(-1, CancellationToken.None));
-    }
 
     [Fact]
     public async Task GetUnassignedAsync_WhenNoEventsExist_ShouldReturnEmptyList()
