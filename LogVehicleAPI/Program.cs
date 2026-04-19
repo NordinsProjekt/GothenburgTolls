@@ -1,6 +1,5 @@
-
-using EF;
-using EF.Extensions;
+using EFCore;
+using EFCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogVehicleAPI;

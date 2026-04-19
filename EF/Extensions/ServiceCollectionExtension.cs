@@ -1,8 +1,8 @@
-﻿using EF.Repositories;
+﻿using EFCore.Repositories;
 using Entities.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EF.Extensions;
+namespace EFCore.Extensions;
 
 public static class ServiceCollectionExtension
 {

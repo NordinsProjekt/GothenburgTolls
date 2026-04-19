@@ -2,7 +2,7 @@
 using Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EF.Repositories;
+namespace EFCore.Repositories;
 
 public class DailyTollSummaryRepository(IDbContextFactory<TollDbContext> contextFactory) : IDailyTollSummaryRepository
 {

@@ -2,7 +2,7 @@
 using Entities.Bases;
 using Microsoft.EntityFrameworkCore;
 
-namespace EF;
+namespace EFCore;
 
 public class TollDbContext(DbContextOptions<TollDbContext> options) : DbContext(options)
 {
@@ -12,8 +12,8 @@ public class TollDbContext(DbContextOptions<TollDbContext> options) : DbContext(
         base.OnModelCreating(modelBuilder);
     }
 
-    public DbSet<Vehicle> Vehicles { get; set; }
-    public DbSet<TollInvoice> TollInvoices { get; set; }
-    public DbSet<TollEvent> TollEvents { get; set; }
-    public DbSet<DailyTollSummary> DailyTollSummaries { get; set; }
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<TollInvoice> TollInvoices => Set<TollInvoice>();
+    public DbSet<TollEvent> TollEvents => Set<TollEvent>();
+    public DbSet<DailyTollSummary> DailyTollSummaries => Set<DailyTollSummary>();
 }

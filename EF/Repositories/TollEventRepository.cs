@@ -2,7 +2,7 @@
 using Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EF.Repositories;
+namespace EFCore.Repositories;
 
 public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory) : ITollEventRepository
 {
@@ -22,7 +22,7 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
         return await db.TollEvents.AsNoTracking()
             .Where(te => te.Vehicle != null &&
                 te.Vehicle.RegistrationNumber.Equals(registrationNumber))
-            .Where(te => te.EventDateTime.ToLongDateString().Equals(eventDate))
+               .Where(te => te.EventDateTime.Date == eventDate.ToDateTime(TimeOnly.MinValue))
             .ToListAsync(cancellationToken);
     }
 
