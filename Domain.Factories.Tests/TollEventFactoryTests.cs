@@ -101,6 +101,25 @@ public class TollEventFactoryTests
     }
 
     [Fact]
+    public void Create_WithZoneExceeding64Characters_ShouldThrowArgumentOutOfRangeException()
+    {
+        var zone = new string('A', 65);
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone, Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void Create_WithZoneExactly64Characters_ShouldReturnTollEvent()
+    {
+        var zone = new string('A', 64);
+
+        var tollEvent = TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone, Guid.NewGuid());
+
+        Assert.Equal(zone, tollEvent.Zone);
+    }
+
+    [Fact]
     public void Create_WithEmptyVehicleId_ShouldThrowArgumentException()
     {
         Assert.Throws<ArgumentException>(() =>

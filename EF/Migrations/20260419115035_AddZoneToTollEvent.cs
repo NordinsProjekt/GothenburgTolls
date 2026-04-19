@@ -15,8 +15,7 @@ namespace EFCore.Migrations
                 table: "TollEvents",
                 type: "nvarchar(64)",
                 maxLength: 64,
-                nullable: false,
-                defaultValue: "");
+                nullable: false);
         }
 
         /// <inheritdoc />
