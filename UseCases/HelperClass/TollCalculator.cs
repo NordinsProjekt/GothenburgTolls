@@ -16,13 +16,15 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
         ArgumentNullException.ThrowIfNull(dates);
         if (dates.Length == 0) return 0;
 
-        if (dates.Length == 1) return Math.Min(CalculateSinglePassageFee(dates[0], vehicle), tollRateService.MaxDailyFee);
+        DateTime[] sortedDates = [.. dates.OrderBy(d => d)];
 
-        DateTime intervalStart = dates[0];
+        if (sortedDates.Length == 1) return Math.Min(CalculateSinglePassageFee(sortedDates[0], vehicle), tollRateService.MaxDailyFee);
+
+        DateTime intervalStart = sortedDates[0];
         int intervalHighestFee = 0;
         int totalFee = 0;
 
-        foreach (DateTime date in dates)
+        foreach (DateTime date in sortedDates)
         {
             int currentFee = CalculateSinglePassageFee(date, vehicle);
             bool withinSameInterval = (date - intervalStart).TotalMinutes <= 60;

@@ -219,6 +219,28 @@ public class TollCalculatorTests
     // --- All passes toll-free ---
 
     [Fact]
+    public void CalculateDailyTotalFee_UnsortedDates_ShouldProduceSameResultAsSorted()
+    {
+        DateTime[] unsorted =
+        [
+            new(2025, 6, 2, 15, 30, 0), // 18
+            new(2025, 6, 2, 7, 0, 0),   // 18
+            new(2025, 6, 2, 8, 30, 0),  // 8
+        ];
+
+        DateTime[] sorted =
+        [
+            new(2025, 6, 2, 7, 0, 0),
+            new(2025, 6, 2, 8, 30, 0),
+            new(2025, 6, 2, 15, 30, 0),
+        ];
+
+        Assert.Equal(
+            _sut.CalculateDailyTotalFee(_car, sorted),
+            _sut.CalculateDailyTotalFee(_car, unsorted));
+    }
+
+    [Fact]
     public void CalculateDailyTotalFee_AllPassesOutsideTollHours_ShouldReturnZero()
     {
         DateTime[] dates =
@@ -366,5 +388,19 @@ public class TollCalculatorTests
     public void CalculateDailyTotalFee_NullDates_ShouldThrowArgumentNullException()
     {
         Assert.Throws<ArgumentNullException>(() => _sut.CalculateDailyTotalFee(_car, null!));
+    }
+
+    [Fact]
+    public void CalculateDailyTotalFee_SinglePassageExceedsMaxDailyFee_ShouldReturnMaxDailyFee()
+    {
+        var stubRateService = Substitute.For<ITollRateService>();
+        stubRateService.MaxDailyFee.Returns(5);
+        stubRateService.GetFeeForTime(Arg.Any<TimeOnly>()).Returns(18);
+
+        var sut = new TollCalculator(_holidayService, stubRateService);
+
+        int result = sut.CalculateDailyTotalFee(_car, [new DateTime(2024, 3, 4, 7, 30, 0)]);
+
+        Assert.Equal(5, result);
     }
 }
