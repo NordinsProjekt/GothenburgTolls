@@ -19,14 +19,19 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        var dayStartUtc = DateTime.SpecifyKind(eventDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
-        var nextDayStartUtc = dayStartUtc.AddDays(1);
-        var dayStart = new DateTimeOffset(dayStartUtc);
-        var nextDayStart = new DateTimeOffset(nextDayStartUtc);
+        var swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+        var dayStartLocal = eventDate.ToDateTime(TimeOnly.MinValue);
+        var nextDayStartLocal = eventDate.AddDays(1).ToDateTime(TimeOnly.MinValue);
+        var dayStart = new DateTimeOffset(dayStartLocal, swedishTimeZone.GetUtcOffset(dayStartLocal));
+        var nextDayStart = new DateTimeOffset(nextDayStartLocal, swedishTimeZone.GetUtcOffset(nextDayStartLocal));
+
+        var vehicleIds = db.Vehicles
+            .Where(v => v.RegistrationNumber == registrationNumber)
+            .Select(v => v.Id);
 
         return await db.TollEvents.AsNoTracking()
-            .Where(te => te.Vehicle != null &&
-                te.Vehicle.RegistrationNumber.Equals(registrationNumber))
+            .Where(te => te.VehicleId != null && vehicleIds.Contains(te.VehicleId.Value))
+            .Where(te => te.DailyTollSummaryId == null)
             .Where(te => te.EventDateTime >= dayStart && te.EventDateTime < nextDayStart)
             .ToListAsync(cancellationToken);
     }
@@ -53,4 +58,4 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
             .Take(count)
             .ToListAsync(cancellationToken);
     }
-}
+    }

@@ -22,6 +22,7 @@ public class DailyTollSummary
 
     public DailyTollSummary(DateOnly forDay, decimal amount, Guid vehicleId)
     {
+        Id = Guid.NewGuid();
         ForDay = forDay;
         Amount = amount;
         Created = DateTime.Now;

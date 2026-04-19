@@ -3,6 +3,7 @@
 @using Entities.Tolls
 @using UseCases.Interfaces
 @inject ITollEventService TollEventService
+@implements IDisposable
 
 <PageTitle>Toll events</PageTitle>
 
@@ -54,6 +55,7 @@ else
 
 @code {
     private const int RecentCount = 50;
+    private readonly CancellationTokenSource _cts = new();
 
     private IReadOnlyList<TollEvent>? _events;
     private bool _isLoading;
@@ -70,7 +72,11 @@ else
         _error = null;
         try
         {
-            _events = await TollEventService.GetRecentAsync(RecentCount, CancellationToken.None);
+            _events = await TollEventService.GetRecentAsync(RecentCount, _cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Component disposed during async work – discard silently.
         }
         catch (Exception ex)
         {
@@ -80,5 +86,11 @@ else
         {
             _isLoading = false;
         }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
     }
 }

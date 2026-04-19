@@ -12,7 +12,7 @@ public class TollEvent
     public Guid? VehicleId { get; }
     public Vehicle? Vehicle { get; }
 
-    public Guid? DailyTollSummaryId { get; }
+    public Guid? DailyTollSummaryId { get; private set; }
     public DailyTollSummary? DailyTollSummaries { get; }
 
     //For EF
@@ -23,5 +23,20 @@ public class TollEvent
         EventDateTime = eventDateTime;
         Zone = zone;
         VehicleId = vehicleId;
+    }
+
+    public void AssignToDailyTollSummary(Guid dailyTollSummaryId)
+    {
+        if (dailyTollSummaryId == Guid.Empty)
+        {
+            throw new ArgumentException("Daily toll summary id is required.", nameof(dailyTollSummaryId));
+        }
+
+        if (DailyTollSummaryId is not null)
+        {
+            throw new InvalidOperationException("Toll event is already assigned to a daily toll summary.");
+        }
+
+        DailyTollSummaryId = dailyTollSummaryId;
     }
 }
