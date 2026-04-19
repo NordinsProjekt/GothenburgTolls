@@ -4,6 +4,6 @@ namespace UseCases.Dtos;
 
 public record VehiclePassageDto(
     string RegistrationNumber,
-    DateTime EventDateTime,
+    DateTimeOffset EventDateTime,
     string Zone,
     VehicleType VehicleType);

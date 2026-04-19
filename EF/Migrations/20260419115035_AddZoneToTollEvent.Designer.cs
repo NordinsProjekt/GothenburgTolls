@@ -4,6 +4,7 @@ using EFCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFCore.Migrations
 {
     [DbContext(typeof(TollDbContext))]
-    partial class TollDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260419115035_AddZoneToTollEvent")]
+    partial class AddZoneToTollEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace EFCore.Migrations
                     b.HasIndex("VehicleId", "ForDay")
                         .IsUnique();
 
-                    b.ToTable("DailyTollSummaries", (string)null);
+                    b.ToTable("DailyTollSummaries");
                 });
 
             modelBuilder.Entity("Entities.Tolls.TollEvent", b =>
@@ -108,7 +111,7 @@ namespace EFCore.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("TollEvents", (string)null);
+                    b.ToTable("TollEvents");
                 });
 
             modelBuilder.Entity("Entities.Tolls.TollInvoice", b =>
@@ -125,7 +128,7 @@ namespace EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TollInvoices", (string)null);
+                    b.ToTable("TollInvoices");
                 });
 
             modelBuilder.Entity("Entities.Vehicels.Car", b =>

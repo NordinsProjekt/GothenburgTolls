@@ -19,10 +19,15 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
+        var dayStartUtc = DateTime.SpecifyKind(eventDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+        var nextDayStartUtc = dayStartUtc.AddDays(1);
+        var dayStart = new DateTimeOffset(dayStartUtc);
+        var nextDayStart = new DateTimeOffset(nextDayStartUtc);
+
         return await db.TollEvents.AsNoTracking()
             .Where(te => te.Vehicle != null &&
                 te.Vehicle.RegistrationNumber.Equals(registrationNumber))
-               .Where(te => te.EventDateTime.Date == eventDate.ToDateTime(TimeOnly.MinValue))
+            .Where(te => te.EventDateTime >= dayStart && te.EventDateTime < nextDayStart)
             .ToListAsync(cancellationToken);
     }
 
