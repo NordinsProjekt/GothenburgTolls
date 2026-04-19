@@ -38,16 +38,11 @@
     </div>
 </div>
 
-@if (_error is not null)
-{
-    <div class="alert-toll-error p-3 mb-3">@_error</div>
-}
+<ErrorAlert Message="@_error" />
 
 @if (_createdInvoice is not null)
 {
-    <div class="alert-toll-success p-3 mb-3">
-        Invoice created for @_createdInvoice.Year-@_createdInvoice.Month.ToString("D2") — Total: <strong>@_createdInvoice.Sum SEK</strong>
-    </div>
+    <SuccessAlert Message="@($"Invoice created for {_createdInvoice.Year}-{_createdInvoice.Month:D2} — Total: {_createdInvoice.Sum} SEK")" />
 }
 
 <div class="card-toll">
@@ -55,39 +50,15 @@
     <div class="card-body p-0">
         @if (_invoices is null)
         {
-            <div class="p-4 text-center text-muted">Loading...</div>
+            <LoadingIndicator />
         }
         else if (_invoices.Count == 0)
         {
-            <div class="empty-state">
-                <p>No invoices created yet.</p>
-            </div>
+            <EmptyState Message="No invoices created yet." />
         }
         else
         {
-            <table class="table table-toll mb-0">
-                <thead>
-                    <tr>
-                        <th>Registration No.</th>
-                        <th>Period</th>
-                        <th>Total</th>
-                        <th>Days</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var invoice in _invoices)
-                    {
-                        <tr>
-                            <td><strong>@(invoice.Vehicle?.RegistrationNumber ?? "-")</strong></td>
-                            <td>@invoice.Year-@invoice.Month.ToString("D2")</td>
-                            <td><strong>@invoice.Sum SEK</strong></td>
-                            <td>@invoice.TollSummary.Count</td>
-                            <td>@invoice.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <TollInvoiceTable Invoices="_invoices" />
         }
     </div>
 </div>

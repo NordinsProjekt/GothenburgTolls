@@ -1,6 +1,7 @@
 ﻿using Entities.Bases;
 using Entities.Types;
 using Entities.Vehicels;
+using Factories.Validator;
 
 namespace Factories;
 
@@ -8,18 +9,8 @@ public static class VehicleFactory
 {
     public static Vehicle Create(string registrationNumber, VehicleType vehicleType)
     {
-        if (string.IsNullOrWhiteSpace(registrationNumber))
-        {
-            throw new ArgumentException("Registration number is required.", nameof(registrationNumber));
-        }
-
-        if (!Enum.IsDefined(vehicleType))
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(vehicleType),
-                vehicleType,
-                $"Unsupported vehicle type: {(int)vehicleType} is not a defined value of {nameof(VehicleType)}.");
-        }
+        registrationNumber = VehicleValidator.ValidateAndNormalizeRegistrationNumber(registrationNumber);
+        VehicleValidator.ValidateVehicleType(vehicleType);
 
         return vehicleType switch
         {

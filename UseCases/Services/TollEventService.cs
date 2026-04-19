@@ -3,6 +3,7 @@ using Entities.Tolls;
 using Factories;
 using UseCases.Dtos;
 using UseCases.Interfaces;
+using UseCases.Validators;
 
 namespace UseCases.Services;
 
@@ -12,7 +13,7 @@ public class TollEventService(
 {
     public async Task<TollEvent> RegisterAsync(VehiclePassageDto dto, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(dto);
+        TollEventServiceValidator.ValidateDto(dto);
 
         var vehicle = await vehicleService.GetOrCreateAsync(dto, cancellationToken);
 
@@ -25,14 +26,14 @@ public class TollEventService(
 
     public async Task<IReadOnlyList<TollEvent>> GetRecentAsync(int count, CancellationToken cancellationToken)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+        TollEventServiceValidator.ValidateCount(count);
         var events = await tollEventRepository.GetRecentAsync(count, cancellationToken);
         return events;
     }
 
     public async Task<IReadOnlyList<TollEvent>> GetUnassignedAsync(int count, CancellationToken cancellationToken)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+        TollEventServiceValidator.ValidateCount(count);
         var events = await tollEventRepository.GetUnassignedAsync(count, cancellationToken);
         return events;
     }

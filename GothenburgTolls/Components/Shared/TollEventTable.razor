@@ -1,0 +1,28 @@
+@using Entities.Tolls
+
+<table class="table table-toll mb-0">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Zone</th>
+            <th>Registration No.</th>
+            <th>Vehicle Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (TollEvent ev in Events)
+        {
+            <tr>
+                <td>@ev.EventDateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@ev.Zone</td>
+                <td><strong>@(ev.Vehicle?.RegistrationNumber ?? "-")</strong></td>
+                <td>@(ev.Vehicle?.GetType().Name ?? "-")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<TollEvent> Events { get; set; } = [];
+}

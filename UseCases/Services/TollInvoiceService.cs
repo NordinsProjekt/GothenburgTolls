@@ -1,7 +1,9 @@
+using Entities.Bases;
 using Entities.Interfaces;
 using Entities.Tolls;
 using Factories;
 using UseCases.Interfaces;
+using UseCases.Validators;
 
 namespace UseCases.Services;
 
@@ -12,35 +14,17 @@ public class TollInvoiceService(
 {
     public async Task<TollInvoice> CreateAsync(string registrationNumber, int year, int month, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(registrationNumber);
-        ArgumentOutOfRangeException.ThrowIfLessThan(year, 2013, nameof(year));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, DateTime.UtcNow.Year, nameof(year));
-        ArgumentOutOfRangeException.ThrowIfLessThan(month, 1, nameof(month));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(month, 12, nameof(month));
+        registrationNumber = TollInvoiceServiceValidator.ValidateAndNormalizeRegistrationNumber(registrationNumber);
+        TollInvoiceServiceValidator.ValidateYear(year);
+        TollInvoiceServiceValidator.ValidateMonth(month);
 
-        var vehicle = await vehicleRepository.GetVehicleByRegistrationNumberAsync(registrationNumber, cancellationToken)
-            ?? throw new InvalidOperationException($"Vehicle with registration number '{registrationNumber}' not found.");
-
-        if (await tollInvoiceRepository.ExistsAsync(vehicle.Id, year, month, cancellationToken))
-        {
-            throw new InvalidOperationException($"A toll invoice already exists for '{registrationNumber}' for {year}-{month:D2}.");
-        }
-
-        List<DailyTollSummary> summaries = await dailyTollSummaryRepository
-            .GetUninvoicedByVehicleAndMonthAsync(vehicle.Id, year, month, cancellationToken);
-
-        if (summaries.Count == 0)
-        {
-            throw new InvalidOperationException($"No uninvoiced daily toll summaries found for '{registrationNumber}' for {year}-{month:D2}.");
-        }
+        Vehicle vehicle = await GetRequiredVehicleAsync(registrationNumber, cancellationToken);
+        await EnsureNoDuplicateInvoiceAsync(vehicle.Id, registrationNumber, year, month, cancellationToken);
+        List<DailyTollSummary> summaries = await GetRequiredSummariesAsync(vehicle.Id, registrationNumber, year, month, cancellationToken);
 
         TollInvoice invoice = TollInvoiceFactory.Create(vehicle.Id, year, month, summaries);
 
-        foreach (DailyTollSummary summary in summaries)
-        {
-            summary.AssignToTollInvoice(invoice.Id);
-        }
-
+        AssignSummariesToInvoice(summaries, invoice.Id);
         await tollInvoiceRepository.CreateTollInvoiceAsync(invoice, summaries, cancellationToken);
 
         return invoice;
@@ -49,5 +33,40 @@ public class TollInvoiceService(
     public async Task<List<TollInvoice>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await tollInvoiceRepository.GetAllAsync(cancellationToken);
+    }
+
+    private async Task<Vehicle> GetRequiredVehicleAsync(string registrationNumber, CancellationToken cancellationToken)
+    {
+        return await vehicleRepository.GetVehicleByRegistrationNumberAsync(registrationNumber, cancellationToken)
+            ?? throw new InvalidOperationException($"Vehicle with registration number '{registrationNumber}' not found.");
+    }
+
+    private async Task EnsureNoDuplicateInvoiceAsync(Guid vehicleId, string registrationNumber, int year, int month, CancellationToken cancellationToken)
+    {
+        if (await tollInvoiceRepository.ExistsAsync(vehicleId, year, month, cancellationToken))
+        {
+            throw new InvalidOperationException($"A toll invoice already exists for '{registrationNumber}' for {year}-{month:D2}.");
+        }
+    }
+
+    private async Task<List<DailyTollSummary>> GetRequiredSummariesAsync(Guid vehicleId, string registrationNumber, int year, int month, CancellationToken cancellationToken)
+    {
+        List<DailyTollSummary> summaries = await dailyTollSummaryRepository
+            .GetUninvoicedByVehicleAndMonthAsync(vehicleId, year, month, cancellationToken);
+
+        if (summaries.Count == 0)
+        {
+            throw new InvalidOperationException($"No uninvoiced daily toll summaries found for '{registrationNumber}' for {year}-{month:D2}.");
+        }
+
+        return summaries;
+    }
+
+    private static void AssignSummariesToInvoice(List<DailyTollSummary> summaries, Guid invoiceId)
+    {
+        foreach (DailyTollSummary summary in summaries)
+        {
+            summary.AssignToTollInvoice(invoiceId);
+        }
     }
 }

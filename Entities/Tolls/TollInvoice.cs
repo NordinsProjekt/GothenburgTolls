@@ -23,8 +23,7 @@ public class TollInvoice
     {
         if (vehicleId == Guid.Empty)
             throw new ArgumentException("Vehicle id is required.", nameof(vehicleId));
-        if (year < 2000 || year > 2100)
-            throw new ArgumentOutOfRangeException(nameof(year), year, "Year must be between 2000 and 2100.");
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(year);
         if (month < 1 || month > 12)
             throw new ArgumentOutOfRangeException(nameof(month), month, "Month must be between 1 and 12.");
 

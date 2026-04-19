@@ -403,4 +403,31 @@ public class TollCalculatorTests
 
         Assert.Equal(5, result);
     }
+
+    // --- 10 passages every 30 minutes ---
+
+    [Fact]
+    public void CalculateDailyTotalFee_TenPassages30MinutesApart_ShouldChargeHighestPerInterval()
+    {
+        // Interval 1: 06:00(8), 06:30(13), 07:00(18) → 18
+        // Interval 2: 07:30(18), 08:00(13), 08:30(8)  → 18
+        // Interval 3: 09:00(8),  09:30(8),  10:00(8)   → 8
+        // Interval 4: 10:30(8)                          → 8
+        // Total: 18 + 18 + 8 + 8 = 52
+        DateTime[] dates =
+        [
+            new(2025, 6, 2, 6, 0, 0),
+            new(2025, 6, 2, 6, 30, 0),
+            new(2025, 6, 2, 7, 0, 0),
+            new(2025, 6, 2, 7, 30, 0),
+            new(2025, 6, 2, 8, 0, 0),
+            new(2025, 6, 2, 8, 30, 0),
+            new(2025, 6, 2, 9, 0, 0),
+            new(2025, 6, 2, 9, 30, 0),
+            new(2025, 6, 2, 10, 0, 0),
+            new(2025, 6, 2, 10, 30, 0),
+        ];
+
+        Assert.Equal(52, _sut.CalculateDailyTotalFee(_car, dates));
+    }
 }
