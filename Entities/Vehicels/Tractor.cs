@@ -1,6 +1,6 @@
 using Entities.Bases;
 
-namespace Entities.Vehicels;
+namespace Entities.Vehicles;
 
 public class Tractor(string registrationNumber) : Vehicle(registrationNumber)
 {
