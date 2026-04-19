@@ -25,6 +25,12 @@ public class Program
 
         var app = builder.Build();
 
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            TollDbContext db = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TollDbContext>>().CreateDbContext();
+            db.Database.Migrate();
+        }
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {

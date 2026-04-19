@@ -75,4 +75,4 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
             .Take(count)
             .ToListAsync(cancellationToken);
     }
-    }
+}
