@@ -1,8 +1,9 @@
 ﻿using Entities.Interfaces;
+using Entities.Types;
 
 namespace UseCases.HelperClass;
 
-public partial class TollCalculator
+public class TollCalculator
 {
 
     /**

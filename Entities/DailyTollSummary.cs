@@ -1,4 +1,6 @@
-﻿namespace Entities;
+﻿using Entities.Bases;
+
+namespace Entities;
 
 public class DailyTollSummary
 {
@@ -9,6 +11,7 @@ public class DailyTollSummary
     public decimal Amount { get; }
 
     public Guid VehicleId { get; }
+    public Vehicle Vehicle { get; }
 
     public Guid? TollInvoiceId { get; }
     public TollInvoice? TollInvoice { get; }
