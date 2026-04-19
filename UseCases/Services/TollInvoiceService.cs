@@ -2,6 +2,7 @@ using Entities.Interfaces;
 using Entities.Tolls;
 using Factories;
 using UseCases.Interfaces;
+using UseCases.Validators;
 
 namespace UseCases.Services;
 
@@ -12,11 +13,9 @@ public class TollInvoiceService(
 {
     public async Task<TollInvoice> CreateAsync(string registrationNumber, int year, int month, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(registrationNumber);
-        ArgumentOutOfRangeException.ThrowIfLessThan(year, 2013, nameof(year));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, DateTime.UtcNow.Year, nameof(year));
-        ArgumentOutOfRangeException.ThrowIfLessThan(month, 1, nameof(month));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(month, 12, nameof(month));
+        registrationNumber = TollInvoiceServiceValidator.ValidateAndNormalizeRegistrationNumber(registrationNumber);
+        TollInvoiceServiceValidator.ValidateYear(year);
+        TollInvoiceServiceValidator.ValidateMonth(month);
 
         var vehicle = await vehicleRepository.GetVehicleByRegistrationNumberAsync(registrationNumber, cancellationToken)
             ?? throw new InvalidOperationException($"Vehicle with registration number '{registrationNumber}' not found.");

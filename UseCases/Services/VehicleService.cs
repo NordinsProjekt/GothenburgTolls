@@ -3,6 +3,7 @@ using Entities.Interfaces;
 using Factories;
 using UseCases.Dtos;
 using UseCases.Interfaces;
+using UseCases.Validators;
 
 namespace UseCases.Services;
 
@@ -10,7 +11,7 @@ public class VehicleService(IVehicleRepository vehicleRepository) : IVehicleServ
 {
     public async Task<Vehicle> GetOrCreateAsync(VehiclePassageDto dto, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(dto);
+        VehicleServiceValidator.ValidateDto(dto);
 
         var existing = await vehicleRepository.GetVehicleByRegistrationNumberAsync(
             dto.RegistrationNumber, cancellationToken);

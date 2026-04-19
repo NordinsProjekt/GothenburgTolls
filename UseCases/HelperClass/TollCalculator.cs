@@ -48,7 +48,7 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
         return Math.Min(totalFee, tollRateService.MaxDailyFee);
     }
 
-    private bool IsTollFreeVehicle(IVehicle vehicle)
+    private static bool IsTollFreeVehicle(IVehicle vehicle)
     {
         if (vehicle is null) return false;
 

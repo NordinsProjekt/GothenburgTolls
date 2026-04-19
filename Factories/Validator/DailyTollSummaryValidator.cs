@@ -1,4 +1,4 @@
-namespace Factories;
+namespace Factories.Validator;
 
 internal static class DailyTollSummaryValidator
 {
