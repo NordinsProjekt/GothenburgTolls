@@ -8,6 +8,7 @@ namespace Application.UseCases.Tests;
 public class TollCalculatorTests
 {
     private readonly ISwedishHolidayService _holidayService = Substitute.For<ISwedishHolidayService>();
+    private readonly ITollRateService _tollRateService = new GothenburgTollRateService();
     private readonly IVehicle _car;
     private readonly IVehicle _motorbike;
     private readonly TollCalculator _sut;
@@ -20,7 +21,7 @@ public class TollCalculatorTests
         _motorbike = Substitute.For<IVehicle>();
         _motorbike.GetVehicleType().Returns("Motorbike");
 
-        _sut = new TollCalculator(_holidayService);
+        _sut = new TollCalculator(_holidayService, _tollRateService);
     }
 
     // --- Toll-free dates ---
