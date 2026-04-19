@@ -1,4 +1,4 @@
-﻿namespace Entities;
+﻿namespace Entities.Tolls;
 
 public class TollInvoice
 {

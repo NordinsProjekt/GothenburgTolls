@@ -1,6 +1,6 @@
 ﻿using Entities.Bases;
 
-namespace Entities;
+namespace Entities.Tolls;
 
 public class DailyTollSummary
 {
