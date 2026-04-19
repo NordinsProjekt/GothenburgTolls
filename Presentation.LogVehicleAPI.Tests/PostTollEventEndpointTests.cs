@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Entities.Tolls;
 using Entities.Types;
 using Entities.Vehicels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -27,6 +28,7 @@ public class PostTollEventEndpointTests : IClassFixture<WebApplicationFactory<gl
 
         var client = _factory.WithWebHostBuilder(builder =>
         {
+            builder.UseEnvironment("Testing");
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton(mockService);

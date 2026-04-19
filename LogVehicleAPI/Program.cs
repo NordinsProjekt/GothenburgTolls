@@ -25,8 +25,9 @@ public class Program
 
         var app = builder.Build();
 
-        using (IServiceScope scope = app.Services.CreateScope())
+        if (!app.Environment.IsEnvironment("Testing"))
         {
+            using IServiceScope scope = app.Services.CreateScope();
             TollDbContext db = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TollDbContext>>().CreateDbContext();
             db.Database.Migrate();
         }
