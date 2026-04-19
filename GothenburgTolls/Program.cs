@@ -1,4 +1,5 @@
 using EF;
+using EF.Extensions;
 using GothenburgTolls.Components;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ public class Program
             .AddInteractiveServerComponents();
         builder.Services.AddDbContextFactory<TollDbContext>(opt =>
             opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
+        builder.Services.AddEfRepositories();
 
         var app = builder.Build();
 

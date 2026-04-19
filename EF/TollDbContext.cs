@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EF;
 
-public class TollDbContext : DbContext
+public class TollDbContext(DbContextOptions<TollDbContext> options) : DbContext(options)
 {
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TollDbContext).Assembly);
