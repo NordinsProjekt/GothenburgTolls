@@ -11,6 +11,7 @@ Tanken är att kameran ska skicka en **POST** till API:et med:
 - Registreringsnummer
 - Datum/tid
 - Typ av fordon
+- Zone (Kamera)
 
 Antagandet är att kameran bestämmer om det är ambulans, diplomat, motorcykel etc. Detta kommer att skapa ett **fordon** i databasen om det inte redan finns, och sedan ett **TollEvent**.
 
