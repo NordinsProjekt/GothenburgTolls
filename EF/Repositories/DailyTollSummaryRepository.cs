@@ -1,5 +1,5 @@
-﻿using Entities;
-using Entities.Interfaces;
+﻿using Entities.Interfaces;
+using Entities.Tolls;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Repositories;

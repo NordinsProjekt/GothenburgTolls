@@ -43,15 +43,9 @@ public class TollCalculator
 
     private bool IsTollFreeVehicle(IVehicle vehicle)
     {
-        //Kolla mot enum
         if (vehicle == null) return false;
-        string vehicleType = vehicle.GetVehicleType();
-        return vehicleType.Equals(TollFreeVehicles.Motorbike.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Tractor.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Emergency.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Diplomat.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Foreign.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Military.ToString());
+        return Enum.TryParse<VehicleType>(vehicle.GetVehicleType(), out var type)
+               && type.IsTollFree();
     }
 
     public int GetTollFee(DateTime date, IVehicle vehicle)

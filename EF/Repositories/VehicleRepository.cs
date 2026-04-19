@@ -28,10 +28,12 @@ public class VehicleRepository(IDbContextFactory<TollDbContext> contextFactory) 
         return await db.Vehicles.AsNoTracking().FirstAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<List<Vehicle>> GetVehicleByType(Type vehicleType, CancellationToken cancellationToken)
+    public async Task<Vehicle?> GetVehicleByRegistrationNumberAsync(string registrationNumber, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
-        return await db.Vehicles.AsNoTracking().Where(v => v.GetType() == vehicleType).ToListAsync(cancellationToken);
+        return await db.Vehicles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.RegistrationNumber == registrationNumber, cancellationToken);
     }
 
     public async Task<List<TVehicle>> GetVehicleByTypeAsync<TVehicle>(CancellationToken cancellationToken) where TVehicle : Vehicle
