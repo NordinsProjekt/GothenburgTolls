@@ -54,3 +54,27 @@ I slutet på varje månad är tanken att en annan funktion ska trigga och samla 
 ## Arkitektur
 
 Lösningen följer **Onion Architecture** med fyra lager. Beroenden går **endast inåt**:
+
+
+Seed-datan (`SeedData.cs`) innehåller passager för bland annat:
+
+- **GBG101** (Car) – pendlare med flera passager per dag över januari, februari och april
+- **XYZ789**, **KLM234** (Car) – enstaka passager
+- **MCY456** (Motorbike), **TRK321** (Tractor), **AMB112** (Emergency), **DPL007** (Diplomat), **FOR999** (Foreign), **MIL500** (Military) – avgiftsfria fordonstyper
+
+> Seed-endpointen anropar samma `ITollEventService.RegisterAsync()` som den vanliga `POST /TollEvent`-endpointen, så all validering och get-or-create-logik körs precis som i produktion.
+
+---
+
+## Arbetsprocess och användning av AI
+
+Min första tanke var att skapa en API-endpoint för att registrera fordonsinformation, men jag kom fram till att **TollEvent** var bättre – fordonet skapas om det inte finns i databasen sen innan. Sedan la jag till invoice-funktionaliteten eftersom det var ett intressant tillägg som knöt ihop hela flödet.
+
+**AI har använts som en teammedlem** i projektet:
+- Jag skapade strukturen och planerade hur flödet mellan lagren skulle fungera samt entities och repositories.
+- AI fick implementera services och factories utifrån mina specifikationer.
+- AI har gjort **code reviews** mot de regler som definierats i `copilot-instructions.md`.
+- AI har skapat **enhetstester** som följer namnkonventionen `Method_Scenario_ShouldExpectedResult`.
+- Jag testade applikationen, hittade fel och bad om ändringar – särskilt för UI och buggar som dök upp under testfasen.
+
+
