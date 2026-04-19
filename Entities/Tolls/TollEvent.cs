@@ -6,7 +6,7 @@ public class TollEvent
 {
     public Guid Id { get; init; }
 
-    public DateTime EventDateTime { get; }
+    public DateTimeOffset EventDateTime { get; }
     public string Zone { get; } = default!;
 
     public Guid? VehicleId { get; }
@@ -18,7 +18,7 @@ public class TollEvent
     //For EF
     private TollEvent() { }
 
-    public TollEvent(DateTime eventDateTime, string zone, Guid vehicleId)
+    public TollEvent(DateTimeOffset eventDateTime, string zone, Guid vehicleId)
     {
         EventDateTime = eventDateTime;
         Zone = zone;

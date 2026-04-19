@@ -4,7 +4,7 @@ namespace Factories;
 
 public static class TollEventFactory
 {
-    public static TollEvent Create(DateTime eventDateTime, string zone, Guid vehicleId)
+    public static TollEvent Create(DateTimeOffset eventDateTime, string zone, Guid vehicleId)
     {
         TollEventValidator.ValidateEventDateTime(eventDateTime);
         var normalizedZone = TollEventValidator.ValidateAndNormalizeZone(zone);

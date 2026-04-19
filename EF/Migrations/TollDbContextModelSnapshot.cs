@@ -79,7 +79,7 @@ namespace EFCore.Migrations
                     b.HasIndex("VehicleId", "ForDay")
                         .IsUnique();
 
-                    b.ToTable("DailyTollSummaries");
+                    b.ToTable("DailyTollSummaries", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Tolls.TollEvent", b =>
@@ -108,7 +108,7 @@ namespace EFCore.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("TollEvents");
+                    b.ToTable("TollEvents", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Tolls.TollInvoice", b =>
@@ -125,7 +125,7 @@ namespace EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TollInvoices");
+                    b.ToTable("TollInvoices", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Vehicels.Car", b =>

@@ -70,7 +70,7 @@ public class TollEventFactoryTests
     [Fact]
     public void Create_WithFutureEventDateTime_ShouldExposeActualValueOnException()
     {
-        var future = DateTime.UtcNow.AddHours(1);
+        var future = DateTimeOffset.UtcNow.AddHours(1);
 
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
             TollEventFactory.Create(future, ValidZone, Guid.NewGuid()));

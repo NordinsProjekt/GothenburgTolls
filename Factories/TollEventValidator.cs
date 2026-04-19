@@ -4,14 +4,14 @@ internal static class TollEventValidator
 {
     internal const int ZoneMaxLength = 64;
 
-    internal static void ValidateEventDateTime(DateTime eventDateTime)
+    internal static void ValidateEventDateTime(DateTimeOffset eventDateTime)
     {
         if (eventDateTime == default)
         {
             throw new ArgumentException("Event date time is required.", nameof(eventDateTime));
         }
 
-        if (eventDateTime > DateTime.UtcNow.AddMinutes(5))
+        if (eventDateTime > DateTimeOffset.UtcNow)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(eventDateTime),

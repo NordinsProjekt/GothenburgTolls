@@ -8,6 +8,8 @@ namespace Infrastructure.EFCore.Tests;
 
 public class TollEventRepositoryTests : IDisposable
 {
+    private static readonly DateTimeOffset FixedEventDateTime = new(2024, 6, 15, 8, 0, 0, TimeSpan.Zero);
+
     private readonly SqliteTollDbContextFactory _factory = new();
     private readonly TollEventRepository _sut;
 
@@ -109,7 +111,7 @@ public class TollEventRepositoryTests : IDisposable
         await SeedVehicleAsync("ABC123");
 
         var result = await _sut.GetAllByRegistrationAsync(
-            "ABC123", DateOnly.FromDateTime(DateTime.UtcNow), CancellationToken.None);
+            "ABC123", DateOnly.FromDateTime(FixedEventDateTime.UtcDateTime), CancellationToken.None);
 
         Assert.Empty(result);
     }
@@ -119,15 +121,15 @@ public class TollEventRepositoryTests : IDisposable
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
         var otherVehicleId = await SeedVehicleAsync("XYZ999");
-        var today = DateTime.UtcNow.Date.AddHours(8);
+        var queryDay = FixedEventDateTime;
 
-        await _sut.CreateTollEventAsync(new TollEvent(today, "Centrum", vehicleId), CancellationToken.None);
-        await _sut.CreateTollEventAsync(new TollEvent(today.AddHours(1), "Norr", vehicleId), CancellationToken.None);
-        await _sut.CreateTollEventAsync(new TollEvent(today, "Centrum", otherVehicleId), CancellationToken.None);
-        await _sut.CreateTollEventAsync(new TollEvent(today.AddDays(-1), "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(queryDay, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(queryDay.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(queryDay, "Centrum", otherVehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(queryDay.AddDays(-1), "Centrum", vehicleId), CancellationToken.None);
 
         var result = await _sut.GetAllByRegistrationAsync(
-            "ABC123", DateOnly.FromDateTime(today), CancellationToken.None);
+            "ABC123", DateOnly.FromDateTime(queryDay.UtcDateTime), CancellationToken.None);
 
         Assert.Equal(2, result.Count);
     }
@@ -136,7 +138,7 @@ public class TollEventRepositoryTests : IDisposable
     public async Task GetAllByRegistrationAsync_WhenRegistrationDoesNotExist_ShouldReturnEmptyList()
     {
         var result = await _sut.GetAllByRegistrationAsync(
-            "DOES-NOT-EXIST", DateOnly.FromDateTime(DateTime.UtcNow), CancellationToken.None);
+            "DOES-NOT-EXIST", DateOnly.FromDateTime(FixedEventDateTime.UtcDateTime), CancellationToken.None);
 
         Assert.Empty(result);
     }
