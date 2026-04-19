@@ -8,7 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Application.UseCases.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\Factories\Factories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+    <PackageReference Include="PublicHoliday" Version="3.12.0" />
   </ItemGroup>
 
 </Project>

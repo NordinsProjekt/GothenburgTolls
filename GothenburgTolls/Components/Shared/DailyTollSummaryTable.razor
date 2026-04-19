@@ -1,0 +1,28 @@
+@using Entities.Tolls
+
+<table class="table table-toll mb-0">
+    <thead>
+        <tr>
+            <th>Registration No.</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DailyTollSummary summary in Summaries)
+        {
+            <tr>
+                <td><strong>@(summary.Vehicle?.RegistrationNumber ?? "-")</strong></td>
+                <td>@summary.ForDay.ToString("yyyy-MM-dd")</td>
+                <td><strong>@summary.Amount SEK</strong></td>
+                <td>@summary.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<DailyTollSummary> Summaries { get; set; } = [];
+}

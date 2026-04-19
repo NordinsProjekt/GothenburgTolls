@@ -1,0 +1,81 @@
+@page "/tollevents"
+@rendermode InteractiveServer
+@using Entities.Tolls
+@using UseCases.Interfaces
+@inject ITollEventService TollEventService
+@implements IDisposable
+
+<PageTitle>Toll Events</PageTitle>
+
+<div class="page-header">
+    <h1>Toll Events</h1>
+    <span class="badge bg-secondary">Latest @RecentCount</span>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="LoadAsync" disabled="@_isLoading">
+        @(_isLoading ? "Loading..." : "⟳ Refresh")
+    </button>
+</div>
+
+<ErrorAlert Message="@_error" />
+
+<div class="card-toll">
+    <div class="card-header">Recent Passages</div>
+    <div class="card-body p-0">
+        @if (_events is null)
+        {
+            <LoadingIndicator />
+        }
+        else if (_events.Count == 0)
+        {
+            <EmptyState Message="No toll events recorded yet." />
+        }
+        else
+        {
+            <TollEventTable Events="_events" />
+        }
+    </div>
+</div>
+
+@code {
+    private const int RecentCount = 50;
+    private readonly CancellationTokenSource _cts = new();
+
+    private IReadOnlyList<TollEvent>? _events;
+    private bool _isLoading;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _error = null;
+        try
+        {
+            _events = await TollEventService.GetRecentAsync(RecentCount, _cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Component disposed during async work – discard silently.
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

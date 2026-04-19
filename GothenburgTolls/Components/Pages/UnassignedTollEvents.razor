@@ -1,0 +1,78 @@
+@page "/unassignedtollevents"
+@rendermode InteractiveServer
+@using Entities.Tolls
+@using UseCases.Interfaces
+@inject ITollEventService TollEventService
+@implements IDisposable
+
+<PageTitle>Unassigned Events</PageTitle>
+
+<div class="page-header">
+    <h1>Unassigned Events</h1>
+    <span class="badge bg-warning text-dark">Pending</span>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="LoadAsync" disabled="@_isLoading">
+        @(_isLoading ? "Loading..." : "⟳ Refresh")
+    </button>
+</div>
+
+<ErrorAlert Message="@_error" />
+
+<div class="card-toll">
+    <div class="card-header">Passages Without Daily Summary</div>
+    <div class="card-body p-0">
+        @if (_events is null)
+        {
+            <LoadingIndicator />
+        }
+        else if (_events.Count == 0)
+        {
+            <EmptyState Message="All passages have been assigned to daily summaries." />
+        }
+        else
+        {
+            <TollEventTable Events="_events" />
+        }
+    </div>
+</div>
+
+@code {
+    private const int MaxCount = 100;
+    private readonly CancellationTokenSource _cts = new();
+
+    private IReadOnlyList<TollEvent>? _events;
+    private bool _isLoading;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _isLoading = true;
+        _error = null;
+        try
+        {
+            _events = await TollEventService.GetUnassignedAsync(MaxCount, _cts.Token);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

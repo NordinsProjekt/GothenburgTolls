@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,11 +6,20 @@
 	  <WarningsAsErrors>true</WarningsAsErrors>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <UserSecretsId>deced0a9-cbee-40cd-ba95-b1b758b90974</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EF\EFCore.csproj" />
     <ProjectReference Include="..\Entities\Entities.csproj" />
     <ProjectReference Include="..\UseCases\UseCases.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

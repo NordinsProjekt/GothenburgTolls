@@ -1,0 +1,123 @@
+@page "/tollinvoices"
+@rendermode InteractiveServer
+@using Entities.Tolls
+@using UseCases.Interfaces
+@inject ITollInvoiceService TollInvoiceService
+@implements IDisposable
+
+<PageTitle>Invoices</PageTitle>
+
+<div class="page-header">
+    <h1>Invoices</h1>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card-toll">
+            <div class="card-header">Create Invoice</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="regNr" class="form-label fw-semibold">Registration Number</label>
+                    <input id="regNr" class="form-control" @bind="_registrationNumber" placeholder="ABC123" />
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col">
+                        <label for="year" class="form-label fw-semibold">Year</label>
+                        <input id="year" type="number" class="form-control" @bind="_year" />
+                    </div>
+                    <div class="col">
+                        <label for="month" class="form-label fw-semibold">Month</label>
+                        <input id="month" type="number" class="form-control" @bind="_month" min="1" max="12" />
+                    </div>
+                </div>
+                <button class="btn btn-primary" @onclick="CreateInvoiceAsync" disabled="@_isCreating">
+                    @(_isCreating ? "Creating..." : "Create Invoice")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ErrorAlert Message="@_error" />
+
+@if (_createdInvoice is not null)
+{
+    <SuccessAlert Message="@($"Invoice created for {_createdInvoice.Year}-{_createdInvoice.Month:D2} — Total: {_createdInvoice.Sum} SEK")" />
+}
+
+<div class="card-toll">
+    <div class="card-header">All Invoices</div>
+    <div class="card-body p-0">
+        @if (_invoices is null)
+        {
+            <LoadingIndicator />
+        }
+        else if (_invoices.Count == 0)
+        {
+            <EmptyState Message="No invoices created yet." />
+        }
+        else
+        {
+            <TollInvoiceTable Invoices="_invoices" />
+        }
+    </div>
+</div>
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    private string _registrationNumber = string.Empty;
+    private int _year = DateTime.Today.Year;
+    private int _month = DateTime.Today.Month == 1 ? 12 : DateTime.Today.Month - 1;
+    private bool _isCreating;
+    private string? _error;
+    private TollInvoice? _createdInvoice;
+    private List<TollInvoice>? _invoices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoicesAsync();
+    }
+
+    private async Task CreateInvoiceAsync()
+    {
+        _isCreating = true;
+        _error = null;
+        _createdInvoice = null;
+
+        try
+        {
+            _createdInvoice = await TollInvoiceService.CreateAsync(
+                _registrationNumber, _year, _month, _cts.Token);
+
+            await LoadInvoicesAsync();
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _isCreating = false;
+        }
+    }
+
+    private async Task LoadInvoicesAsync()
+    {
+        try
+        {
+            _invoices = await TollInvoiceService.GetAllAsync(_cts.Token);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

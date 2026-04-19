@@ -1,4 +1,8 @@
+using EFCore;
+using EFCore.Extensions;
 using GothenburgTolls.Components;
+using Microsoft.EntityFrameworkCore;
+using UseCases.Extensions;
 
 namespace GothenburgTolls;
 
@@ -11,8 +15,18 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        builder.Services.AddDbContextFactory<TollDbContext>(opt =>
+            opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
+        builder.Services.AddEfRepositories();
+        builder.Services.AddUseCases();
 
         var app = builder.Build();
+
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            TollDbContext db = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TollDbContext>>().CreateDbContext();
+            db.Database.Migrate();
+        }
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

@@ -1,0 +1,10 @@
+@LogVehicleAPI_HostAddress = http://localhost:5030
+
+#############################
+# SEED – Skapa ALL testdata med ett enda anrop (endast Development)
+#############################
+
+POST {{LogVehicleAPI_HostAddress}}/seed
+Content-Type: application/json
+
+###
