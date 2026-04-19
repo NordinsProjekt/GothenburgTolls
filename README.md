@@ -25,7 +25,7 @@ Dessa ska sedan samlas ihop till en **DailyTollSummary** via en funktion som tri
 
 I slutet på varje månad är tanken att en annan funktion ska trigga och samla ihop alla **DailyTollSummary** för varje fordon under tidsperioden och fakturera ägaren av fordonet.
 
-> Kan också triggas via Blazor manuellt.
+> I denna applikation testas det manuellt via Blazor Server-appen.
 
 ---
 
