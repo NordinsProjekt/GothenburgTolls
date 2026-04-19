@@ -1,4 +1,7 @@
+using EFCore;
+using EFCore.Extensions;
 using GothenburgTolls.Components;
+using Microsoft.EntityFrameworkCore;
 
 namespace GothenburgTolls;
 
@@ -11,6 +14,9 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        builder.Services.AddDbContextFactory<TollDbContext>(opt =>
+            opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
+        builder.Services.AddEfRepositories();
 
         var app = builder.Build();
 

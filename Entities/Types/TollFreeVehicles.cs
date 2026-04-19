@@ -1,14 +1,11 @@
-﻿namespace UseCases.HelperClass;
+﻿namespace Entities.Types;
 
-public partial class TollCalculator
+public enum TollFreeVehicles
 {
-    public enum TollFreeVehicles
-    {
-        Motorbike = 0,
-        Tractor = 1,
-        Emergency = 2,
-        Diplomat = 3,
-        Foreign = 4,
-        Military = 5
-    }
+    Motorbike = 0,
+    Tractor = 1,
+    Emergency = 2,
+    Diplomat = 3,
+    Foreign = 4,
+    Military = 5
 }
