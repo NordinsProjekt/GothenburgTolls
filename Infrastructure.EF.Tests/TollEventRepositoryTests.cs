@@ -225,5 +225,106 @@ public class TollEventRepositoryTests : IDisposable
         Assert.Equal(2, result.Count);
     }
 
+    // --- GetUnassignedAsync ---
+
+    [Fact]
+    public async Task GetUnassignedAsync_WhenCountIsZero_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetUnassignedAsync(0, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_WhenCountIsNegative_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetUnassignedAsync(-1, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_WhenNoEventsExist_ShouldReturnEmptyList()
+    {
+        var result = await _sut.GetUnassignedAsync(10, CancellationToken.None);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_WhenAllEventsAreAssigned_ShouldReturnEmptyList()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        var tollEvent = new TollEvent(FixedEventDateTime, "Centrum", vehicleId);
+        await _sut.CreateTollEventAsync(tollEvent, CancellationToken.None);
+
+        // Assign to a daily toll summary
+        var summary = new DailyTollSummary(DateOnly.FromDateTime(FixedEventDateTime.UtcDateTime), 30m, vehicleId);
+        tollEvent.AssignToDailyTollSummary(summary.Id);
+        await using var db = _factory.CreateDbContext();
+        db.Add(summary);
+        db.TollEvents.Update(tollEvent);
+        await db.SaveChangesAsync();
+
+        var result = await _sut.GetUnassignedAsync(10, CancellationToken.None);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_WhenMixedEvents_ShouldReturnOnlyUnassigned()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        var assigned = new TollEvent(FixedEventDateTime, "Centrum", vehicleId);
+        await _sut.CreateTollEventAsync(assigned, CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+
+        var summary = new DailyTollSummary(DateOnly.FromDateTime(FixedEventDateTime.UtcDateTime), 30m, vehicleId);
+        assigned.AssignToDailyTollSummary(summary.Id);
+        await using var db = _factory.CreateDbContext();
+        db.Add(summary);
+        db.TollEvents.Update(assigned);
+        await db.SaveChangesAsync();
+
+        var result = await _sut.GetUnassignedAsync(10, CancellationToken.None);
+
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_ShouldReturnOrderedByEventDateTimeDescending()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(2), "Söder", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetUnassignedAsync(3, CancellationToken.None);
+
+        Assert.Equal("Söder", result[0].Zone);
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_ShouldIncludeVehicle()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetUnassignedAsync(1, CancellationToken.None);
+
+        Assert.NotNull(result[0].Vehicle);
+    }
+
+    [Fact]
+    public async Task GetUnassignedAsync_ShouldRespectCount()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(2), "Söder", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetUnassignedAsync(2, CancellationToken.None);
+
+        Assert.Equal(2, result.Count);
+    }
+
     public void Dispose() => _factory.Dispose();
 }

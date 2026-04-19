@@ -1,15 +1,15 @@
-@page "/tollevents"
+@page "/unassignedtollevents"
 @rendermode InteractiveServer
 @using Entities.Tolls
 @using UseCases.Interfaces
 @inject ITollEventService TollEventService
 @implements IDisposable
 
-<PageTitle>Toll Events</PageTitle>
+<PageTitle>Unassigned Events</PageTitle>
 
 <div class="page-header">
-    <h1>Toll Events</h1>
-    <span class="badge bg-secondary">Latest @RecentCount</span>
+    <h1>Unassigned Events</h1>
+    <span class="badge bg-warning text-dark">Pending</span>
 </div>
 
 <div class="mb-3">
@@ -24,7 +24,7 @@
 }
 
 <div class="card-toll">
-    <div class="card-header">Recent Passages</div>
+    <div class="card-header">Passages Without Daily Summary</div>
     <div class="card-body p-0">
         @if (_events is null)
         {
@@ -33,7 +33,7 @@
         else if (_events.Count == 0)
         {
             <div class="empty-state">
-                <p>No toll events recorded yet.</p>
+                <p>All passages have been assigned to daily summaries.</p>
             </div>
         }
         else
@@ -64,7 +64,7 @@
 </div>
 
 @code {
-    private const int RecentCount = 50;
+    private const int MaxCount = 100;
     private readonly CancellationTokenSource _cts = new();
 
     private IReadOnlyList<TollEvent>? _events;
@@ -82,12 +82,9 @@
         _error = null;
         try
         {
-            _events = await TollEventService.GetRecentAsync(RecentCount, _cts.Token);
+            _events = await TollEventService.GetUnassignedAsync(MaxCount, _cts.Token);
         }
-        catch (OperationCanceledException)
-        {
-            // Component disposed during async work – discard silently.
-        }
+        catch (OperationCanceledException) { }
         catch (Exception ex)
         {
             _error = ex.Message;

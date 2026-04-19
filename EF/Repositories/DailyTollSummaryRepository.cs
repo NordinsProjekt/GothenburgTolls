@@ -35,4 +35,41 @@ public class DailyTollSummaryRepository(IDbContextFactory<TollDbContext> context
             .Where(dts => dts.VehicleId == vehicleId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<List<DailyTollSummary>> GetAllUninvoicedAsync(CancellationToken cancellationToken)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.DailyTollSummaries
+            .AsNoTracking()
+            .Include(dts => dts.Vehicle)
+            .Where(dts => dts.TollInvoiceId == null)
+            .OrderBy(dts => dts.ForDay)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<DailyTollSummary>> GetUninvoicedByVehicleIdAsync(Guid vehicleId, CancellationToken cancellationToken)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.DailyTollSummaries
+            .AsNoTracking()
+            .Where(dts => dts.VehicleId == vehicleId && dts.TollInvoiceId == null)
+            .OrderBy(dts => dts.ForDay)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<DailyTollSummary>> GetUninvoicedByVehicleAndMonthAsync(Guid vehicleId, int year, int month, CancellationToken cancellationToken)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.DailyTollSummaries
+            .AsNoTracking()
+            .Where(dts => dts.VehicleId == vehicleId
+                && dts.TollInvoiceId == null
+                && dts.ForDay.Year == year
+                && dts.ForDay.Month == month)
+            .OrderBy(dts => dts.ForDay)
+            .ToListAsync(cancellationToken);
+    }
 }
