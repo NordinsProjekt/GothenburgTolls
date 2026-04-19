@@ -12,6 +12,7 @@ public class VehicleRepository(IDbContextFactory<TollDbContext> contextFactory) 
 
         db.Add(vehicle);
         await db.SaveChangesAsync(cancellationToken);
+
         return vehicle.Id;
     }
 
