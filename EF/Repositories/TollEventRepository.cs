@@ -37,4 +37,20 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
 
         return await db.TollEvents.AsNoTracking().SingleAsync(te => te.Id == id, cancellationToken);
     }
+
+    public async Task<List<TollEvent>> GetRecentAsync(int count, CancellationToken cancellationToken)
+    {
+        if (count <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be greater than zero.");
+        }
+
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.TollEvents.AsNoTracking()
+            .Include(te => te.Vehicle)
+            .OrderByDescending(te => te.EventDateTime)
+            .Take(count)
+            .ToListAsync(cancellationToken);
+    }
 }

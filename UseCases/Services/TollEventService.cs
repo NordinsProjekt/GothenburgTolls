@@ -22,4 +22,11 @@ public class TollEventService(
 
         return tollEvent;
     }
+
+    public async Task<IReadOnlyList<TollEvent>> GetRecentAsync(int count, CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+        var events = await tollEventRepository.GetRecentAsync(count, cancellationToken);
+        return events;
+    }
 }

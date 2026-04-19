@@ -2,6 +2,7 @@ using EFCore;
 using EFCore.Extensions;
 using GothenburgTolls.Components;
 using Microsoft.EntityFrameworkCore;
+using UseCases.Extensions;
 
 namespace GothenburgTolls;
 
@@ -17,6 +18,7 @@ public class Program
         builder.Services.AddDbContextFactory<TollDbContext>(opt =>
             opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
         builder.Services.AddEfRepositories();
+        builder.Services.AddUseCases();
 
         var app = builder.Build();
 

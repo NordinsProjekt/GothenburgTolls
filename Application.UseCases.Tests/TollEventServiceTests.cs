@@ -132,4 +132,52 @@ public class TollEventServiceTests
             Arg.Any<TollEvent>(),
             Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task GetRecentAsync_WithValidCount_ShouldCallGetRecentAsyncOnRepository()
+    {
+        _tollEventRepository.GetRecentAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new List<TollEvent>());
+
+        await _sut.GetRecentAsync(10, CancellationToken.None);
+
+        await _tollEventRepository.Received(1).GetRecentAsync(10, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WithValidCount_ShouldReturnEventsFromRepository()
+    {
+        var expected = new List<TollEvent> { new(DateTime.UtcNow.AddMinutes(-1), "ZoneA", Guid.NewGuid()) };
+        _tollEventRepository.GetRecentAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(expected);
+
+        var result = await _sut.GetRecentAsync(10, CancellationToken.None);
+
+        Assert.Same(expected, result);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenCountIsZero_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetRecentAsync(0, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenCountIsNegative_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetRecentAsync(-1, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenCountIsInvalid_ShouldNotCallRepository()
+    {
+        try { await _sut.GetRecentAsync(0, CancellationToken.None); }
+        catch (ArgumentOutOfRangeException) { }
+
+        await _tollEventRepository.DidNotReceive().GetRecentAsync(
+            Arg.Any<int>(),
+            Arg.Any<CancellationToken>());
+    }
 }

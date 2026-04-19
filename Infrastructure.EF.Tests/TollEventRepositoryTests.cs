@@ -143,5 +143,87 @@ public class TollEventRepositoryTests : IDisposable
         Assert.Empty(result);
     }
 
+    [Fact]
+    public async Task GetRecentAsync_WhenCountIsZero_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetRecentAsync(0, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenCountIsNegative_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.GetRecentAsync(-1, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenNoEventsExist_ShouldReturnEmptyList()
+    {
+        var result = await _sut.GetRecentAsync(5, CancellationToken.None);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenEventsExist_ShouldReturnRequestedCount()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(2), "Söder", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetRecentAsync(2, CancellationToken.None);
+
+        Assert.Equal(2, result.Count);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenEventsExist_ShouldReturnOrderedByEventDateTimeDescending()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(2), "Söder", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetRecentAsync(3, CancellationToken.None);
+
+        Assert.Equal("Söder", result[0].Zone);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenEventsExist_ShouldIncludeVehicle()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetRecentAsync(1, CancellationToken.None);
+
+        Assert.NotNull(result[0].Vehicle);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenEventsExist_ShouldIncludeVehicleWithCorrectRegistrationNumber()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetRecentAsync(1, CancellationToken.None);
+
+        Assert.Equal("ABC123", result[0].Vehicle!.RegistrationNumber);
+    }
+
+    [Fact]
+    public async Task GetRecentAsync_WhenCountExceedsAvailable_ShouldReturnAllEvents()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+        await _sut.CreateTollEventAsync(new TollEvent(FixedEventDateTime.AddHours(1), "Norr", vehicleId), CancellationToken.None);
+
+        var result = await _sut.GetRecentAsync(10, CancellationToken.None);
+
+        Assert.Equal(2, result.Count);
+    }
+
     public void Dispose() => _factory.Dispose();
 }
