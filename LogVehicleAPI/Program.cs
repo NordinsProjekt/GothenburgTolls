@@ -59,7 +59,10 @@ public class Program
                 }
                 catch (DbUpdateException ex)
                 {
-                    return Results.Conflict(new { error = "A database conflict occurred.", detail = ex.Message });
+                    var logger = app.Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger("TollEventEndpoint");
+                    logger.LogError(ex, "Database error while registering toll event");
+                    return Results.Conflict(new { error = "A database conflict occurred." });
                 }
             })
             .WithName("PostTollEvent");
