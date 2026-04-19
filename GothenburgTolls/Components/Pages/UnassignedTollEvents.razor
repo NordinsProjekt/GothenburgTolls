@@ -18,47 +18,22 @@
     </button>
 </div>
 
-@if (_error is not null)
-{
-    <div class="alert-toll-error p-3 mb-3">@_error</div>
-}
+<ErrorAlert Message="@_error" />
 
 <div class="card-toll">
     <div class="card-header">Passages Without Daily Summary</div>
     <div class="card-body p-0">
         @if (_events is null)
         {
-            <div class="p-4 text-center text-muted">Loading...</div>
+            <LoadingIndicator />
         }
         else if (_events.Count == 0)
         {
-            <div class="empty-state">
-                <p>All passages have been assigned to daily summaries.</p>
-            </div>
+            <EmptyState Message="All passages have been assigned to daily summaries." />
         }
         else
         {
-            <table class="table table-toll mb-0">
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Zone</th>
-                        <th>Registration No.</th>
-                        <th>Vehicle Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var ev in _events)
-                    {
-                        <tr>
-                            <td>@ev.EventDateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
-                            <td>@ev.Zone</td>
-                            <td><strong>@(ev.Vehicle?.RegistrationNumber ?? "-")</strong></td>
-                            <td>@(ev.Vehicle?.GetType().Name ?? "-")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <TollEventTable Events="_events" />
         }
     </div>
 </div>

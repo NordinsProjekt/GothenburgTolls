@@ -1,0 +1,30 @@
+@using Entities.Tolls
+
+<table class="table table-toll mb-0">
+    <thead>
+        <tr>
+            <th>Registration No.</th>
+            <th>Period</th>
+            <th>Total</th>
+            <th>Days</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (TollInvoice invoice in Invoices)
+        {
+            <tr>
+                <td><strong>@(invoice.Vehicle?.RegistrationNumber ?? "-")</strong></td>
+                <td>@invoice.Year-@invoice.Month.ToString("D2")</td>
+                <td><strong>@invoice.Sum SEK</strong></td>
+                <td>@invoice.TollSummary.Count</td>
+                <td>@invoice.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<TollInvoice> Invoices { get; set; } = [];
+}

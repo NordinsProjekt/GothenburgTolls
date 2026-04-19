@@ -1,0 +1,12 @@
+@if (Message is not null)
+{
+    <div class="alert-toll-success p-3 mb-3">@Message</div>
+}
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

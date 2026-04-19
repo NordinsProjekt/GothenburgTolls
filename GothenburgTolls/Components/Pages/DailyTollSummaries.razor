@@ -33,16 +33,11 @@
     </div>
 </div>
 
-@if (_error is not null)
-{
-    <div class="alert-toll-error p-3 mb-3">@_error</div>
-}
+<ErrorAlert Message="@_error" />
 
 @if (_createdSummary is not null)
 {
-    <div class="alert-toll-success p-3 mb-3">
-        Summary created for @_createdSummary.ForDay.ToString("yyyy-MM-dd") — Amount: <strong>@_createdSummary.Amount SEK</strong>
-    </div>
+    <SuccessAlert Message="@($"Summary created for {_createdSummary.ForDay:yyyy-MM-dd} — Amount: {_createdSummary.Amount} SEK")" />
 }
 
 <div class="card-toll">
@@ -50,37 +45,15 @@
     <div class="card-body p-0">
         @if (_summaries is null)
         {
-            <div class="p-4 text-center text-muted">Loading...</div>
+            <LoadingIndicator />
         }
         else if (_summaries.Count == 0)
         {
-            <div class="empty-state">
-                <p>No uninvoiced summaries found.</p>
-            </div>
+            <EmptyState Message="No uninvoiced summaries found." />
         }
         else
         {
-            <table class="table table-toll mb-0">
-                <thead>
-                    <tr>
-                        <th>Registration No.</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var summary in _summaries)
-                    {
-                        <tr>
-                            <td><strong>@(summary.Vehicle?.RegistrationNumber ?? "-")</strong></td>
-                            <td>@summary.ForDay.ToString("yyyy-MM-dd")</td>
-                            <td><strong>@summary.Amount SEK</strong></td>
-                            <td>@summary.Created.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <DailyTollSummaryTable Summaries="_summaries" />
         }
     </div>
 </div>
