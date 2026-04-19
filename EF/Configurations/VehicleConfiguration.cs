@@ -3,7 +3,7 @@ using Entities.Bases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EF.Configurations;
+namespace EFCore.Configurations;
 
 internal class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
 {

@@ -8,7 +8,7 @@ public class TollInvoice
     public DateOnly ToDay { get; }
     public decimal Sum => TollSummary.Sum(ts => ts.Amount);
 
-    public List<DailyTollSummary> TollSummary { get; } = new();
+    public required IReadOnlyCollection<DailyTollSummary> TollSummary { get; init; }
 
     private TollInvoice() { }
 
@@ -16,7 +16,6 @@ public class TollInvoice
     {
         FromDay = fromDay;
         ToDay = toDay;
-        TollSummary.AddRange(tollSummary);
+        TollSummary = [.. tollSummary];
     }
-
 }

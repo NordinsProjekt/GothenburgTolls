@@ -10,8 +10,8 @@ public class DailyTollSummary
     public DateOnly ForDay { get; }
     public decimal Amount { get; }
 
-    public Guid VehicleId { get; }
-    public Vehicle Vehicle { get; }
+    public Guid VehicleId { get; init; }
+    public Vehicle? Vehicle { get; init; }
 
     public Guid? TollInvoiceId { get; }
     public TollInvoice? TollInvoice { get; }
@@ -20,10 +20,11 @@ public class DailyTollSummary
 
     private DailyTollSummary() { }
 
-    public DailyTollSummary(DateOnly forDay, decimal amount)
+    public DailyTollSummary(DateOnly forDay, decimal amount, Guid vehicleId)
     {
         ForDay = forDay;
         Amount = amount;
         Created = DateTime.Now;
+        VehicleId = vehicleId;
     }
 }

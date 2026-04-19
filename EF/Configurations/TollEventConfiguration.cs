@@ -2,25 +2,25 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EF.Configurations;
+namespace EFCore.Configurations;
 
 internal class TollEventConfiguration : IEntityTypeConfiguration<TollEvent>
 {
     public void Configure(EntityTypeBuilder<TollEvent> e)
     {
-        e.HasKey(e => e.Id);
-        e.Property(e => e.EventDateTime).IsRequired();
+        e.HasKey(te => te.Id);
+        e.Property(te => te.EventDateTime).IsRequired();
 
-        e.HasIndex(x => x.DailyTollSummaryId);
+        e.HasIndex(te => te.DailyTollSummaryId);
 
-        e.HasOne(x => x.Vehicle)
+        e.HasOne(te => te.Vehicle)
             .WithMany()
-            .HasForeignKey(x => x.VehicleId)
+            .HasForeignKey(te => te.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        e.HasOne(x => x.DailyTollSummaries)
+        e.HasOne(te => te.DailyTollSummaries)
             .WithMany("TollEvents")
-            .HasForeignKey(x => x.DailyTollSummaryId)
+            .HasForeignKey(te => te.DailyTollSummaryId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

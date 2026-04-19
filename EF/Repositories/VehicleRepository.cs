@@ -2,7 +2,7 @@
 using Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EF.Repositories;
+namespace EFCore.Repositories;
 
 public class VehicleRepository(IDbContextFactory<TollDbContext> contextFactory) : IVehicleRepository
 {
@@ -32,5 +32,11 @@ public class VehicleRepository(IDbContextFactory<TollDbContext> contextFactory) 
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
         return await db.Vehicles.AsNoTracking().Where(v => v.GetType() == vehicleType).ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<TVehicle>> GetVehicleByTypeAsync<TVehicle>(CancellationToken cancellationToken) where TVehicle : Vehicle
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        return await db.Vehicles.AsNoTracking().OfType<TVehicle>().ToListAsync(cancellationToken);
     }
 }

@@ -2,17 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EF.Configurations;
+namespace EFCore.Configurations;
 
 internal class TollInvoiceConfiguration : IEntityTypeConfiguration<TollInvoice>
 {
     public void Configure(EntityTypeBuilder<TollInvoice> e)
     {
-        e.HasKey(x => x.Id);
+        e.HasKey(ti => ti.Id);
 
-        e.Property(x => x.FromDay).IsRequired();
-        e.Property(x => x.ToDay).IsRequired();
+        e.Property(ti => ti.FromDay).IsRequired();
+        e.Property(ti => ti.ToDay).IsRequired();
 
-        e.Ignore(x => x.Sum);
+        e.Ignore(ti => ti.Sum);
     }
 }

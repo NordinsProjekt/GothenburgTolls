@@ -1,5 +1,5 @@
-using EF;
-using EF.Extensions;
+using EFCore;
+using EFCore.Extensions;
 using GothenburgTolls.Components;
 using Microsoft.EntityFrameworkCore;
 
