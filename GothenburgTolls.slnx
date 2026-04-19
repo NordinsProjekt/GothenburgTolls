@@ -7,7 +7,7 @@
     <Project Path="UseCases/UseCases.csproj" />
   </Folder>
   <Folder Name="/3. Infrastructure/">
-    <Project Path="EF/EF.csproj" />
+    <Project Path="EF/EFCore.csproj" />
   </Folder>
   <Folder Name="/4. Presentation/">
     <Project Path="GothenburgTolls/GothenburgTolls.csproj" />

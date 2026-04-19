@@ -1,5 +1,6 @@
 
 using EF;
+using EF.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LogVehicleAPI;
@@ -17,6 +18,7 @@ public class Program
         builder.Services.AddOpenApi();
         builder.Services.AddDbContextFactory<TollDbContext>(opt =>
             opt.UseSqlServer(builder.Configuration.GetConnectionString("TollDb")));
+        builder.Services.AddEfRepositories();
 
         var app = builder.Build();
 
