@@ -10,6 +10,7 @@ internal class TollEventConfiguration : IEntityTypeConfiguration<TollEvent>
     {
         e.HasKey(te => te.Id);
         e.Property(te => te.EventDateTime).IsRequired();
+        e.Property(te => te.Zone).IsRequired().HasMaxLength(64);
 
         e.HasIndex(te => te.DailyTollSummaryId);
 

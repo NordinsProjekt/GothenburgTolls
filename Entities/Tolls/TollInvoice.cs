@@ -2,7 +2,7 @@
 
 public class TollInvoice
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     public DateOnly FromDay { get; }
     public DateOnly ToDay { get; }

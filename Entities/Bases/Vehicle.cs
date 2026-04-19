@@ -4,7 +4,7 @@ namespace Entities.Bases;
 
 public abstract class Vehicle(string registrationNumber) : IVehicle
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     public string RegistrationNumber { get; } = registrationNumber;
 

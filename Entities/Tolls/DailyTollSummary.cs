@@ -4,7 +4,7 @@ namespace Entities.Tolls;
 
 public class DailyTollSummary
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     public DateTime Created { get; }
     public DateOnly ForDay { get; }
