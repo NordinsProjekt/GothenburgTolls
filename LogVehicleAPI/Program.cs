@@ -67,6 +67,24 @@ public class Program
             })
             .WithName("PostTollEvent");
 
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapPost("/seed", async (
+                    ITollEventService tollEventService,
+                    CancellationToken cancellationToken) =>
+                {
+                    var created = new List<object>();
+                    foreach (VehiclePassageDto dto in SeedData.Passages)
+                    {
+                        var tollEvent = await tollEventService.RegisterAsync(dto, cancellationToken);
+                        created.Add(new { tollEvent.Id, dto.RegistrationNumber, dto.EventDateTime, dto.Zone, dto.VehicleType });
+                    }
+
+                    return Results.Ok(new { count = created.Count, events = created });
+                })
+                .WithName("SeedTestData");
+        }
+
         app.Run();
     }
 }

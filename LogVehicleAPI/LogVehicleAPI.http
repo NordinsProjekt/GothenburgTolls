@@ -1,13 +1,10 @@
 @LogVehicleAPI_HostAddress = http://localhost:5030
 
-POST {{LogVehicleAPI_HostAddress}}/TollEvent
-Content-Type: application/json
+#############################
+# SEED – Skapa ALL testdata med ett enda anrop (endast Development)
+#############################
 
-{
-  "registrationNumber": "ABC123",
-  "eventDateTime": "2025-06-01T08:30:00+02:00",
-  "zone": "Backa",
-  "vehicleType": 0
-}
+POST {{LogVehicleAPI_HostAddress}}/seed
+Content-Type: application/json
 
 ###

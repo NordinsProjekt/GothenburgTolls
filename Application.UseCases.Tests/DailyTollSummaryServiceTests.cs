@@ -57,6 +57,46 @@ public class DailyTollSummaryServiceTests
     }
 
     [Fact]
+    public async Task CreateAsync_WithTodaysDate_ShouldThrowArgumentOutOfRangeException()
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.CreateAsync(ValidRegNr, today, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithFutureDate_ShouldThrowArgumentOutOfRangeException()
+    {
+        var futureDate = DateOnly.FromDateTime(DateTime.Today.AddDays(30));
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.CreateAsync(ValidRegNr, futureDate, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithFutureDate_ShouldThrowWithForDayParamName()
+    {
+        var futureDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+
+        var ex = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.CreateAsync(ValidRegNr, futureDate, CancellationToken.None));
+
+        Assert.Equal("forDay", ex.ParamName);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenSummaryAlreadyExists_ShouldThrowInvalidOperationException()
+    {
+        var vehicle = SetupVehicle();
+        _dailyTollSummaryRepository.ExistsAsync(vehicle.Id, ValidDay, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None));
+    }
+
+    [Fact]
     public async Task CreateAsync_WithValidInput_ShouldCallGetVehicleByRegistrationNumber()
     {
         var vehicle = SetupVehicle();
@@ -145,6 +185,45 @@ public class DailyTollSummaryServiceTests
     {
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _sut.CreateAsync("", ValidDay, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithValidInput_ShouldCallUpdateTollEventsOnRepository()
+    {
+        var vehicle = SetupVehicle();
+        SetupTollEvents(vehicle.Id);
+
+        await _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None);
+
+        await _tollEventRepository.Received(1).UpdateTollEventsAsync(
+            Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateAsync_WithValidInput_ShouldAssignSummaryIdToTollEvents()
+    {
+        var vehicle = SetupVehicle();
+        var events = new List<TollEvent>
+        {
+            new(new DateTimeOffset(2025, 6, 16, 7, 30, 0, TimeSpan.FromHours(2)), "ZoneA", vehicle.Id)
+        };
+        _tollEventRepository.GetAllByRegistrationAsync(ValidRegNr, ValidDay, Arg.Any<CancellationToken>())
+            .Returns(events);
+
+        DailyTollSummary result = await _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None);
+
+        Assert.Equal(result.Id, events[0].DailyTollSummaryId);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenNoTollEventsFound_ShouldThrowInvalidOperationException()
+    {
+        var vehicle = SetupVehicle();
+        _tollEventRepository.GetAllByRegistrationAsync(ValidRegNr, ValidDay, Arg.Any<CancellationToken>())
+            .Returns(new List<TollEvent>());
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _sut.CreateAsync(ValidRegNr, ValidDay, CancellationToken.None));
     }
 
     [Fact]

@@ -16,6 +16,15 @@ public class DailyTollSummaryRepository(IDbContextFactory<TollDbContext> context
         return dailyTollSummary.Id;
     }
 
+    public async Task<bool> ExistsAsync(Guid vehicleId, DateOnly forDay, CancellationToken cancellationToken)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.DailyTollSummaries
+            .AsNoTracking()
+            .AnyAsync(dts => dts.VehicleId == vehicleId && dts.ForDay == forDay, cancellationToken);
+    }
+
     public async Task<List<DailyTollSummary>> GetAllByVehicleIdAsync(Guid vehicleId, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
