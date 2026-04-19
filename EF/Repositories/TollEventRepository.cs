@@ -20,8 +20,10 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var swedishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
-        var dayStart = new DateTimeOffset(eventDate.ToDateTime(TimeOnly.MinValue), swedishTimeZone.GetUtcOffset(eventDate.ToDateTime(TimeOnly.MinValue)));
-        var nextDayStart = dayStart.AddDays(1);
+        var dayStartLocal = eventDate.ToDateTime(TimeOnly.MinValue);
+        var nextDayStartLocal = eventDate.AddDays(1).ToDateTime(TimeOnly.MinValue);
+        var dayStart = new DateTimeOffset(dayStartLocal, swedishTimeZone.GetUtcOffset(dayStartLocal));
+        var nextDayStart = new DateTimeOffset(nextDayStartLocal, swedishTimeZone.GetUtcOffset(nextDayStartLocal));
 
         var vehicleIds = db.Vehicles
             .Where(v => v.RegistrationNumber == registrationNumber)
