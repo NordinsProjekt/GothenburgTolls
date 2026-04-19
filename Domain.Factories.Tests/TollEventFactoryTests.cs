@@ -19,7 +19,7 @@ public class TollEventFactoryTests
     [Fact]
     public void Create_WithValidInput_ShouldReturnTollEventWithGivenEventDateTime()
     {
-        var eventDateTime = DateTime.UtcNow.AddMinutes(-1);
+        var eventDateTime = DateTimeOffset.UtcNow.AddMinutes(-1);
 
         var tollEvent = TollEventFactory.Create(eventDateTime, ValidZone, Guid.NewGuid());
 
