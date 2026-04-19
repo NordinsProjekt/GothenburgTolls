@@ -14,8 +14,7 @@ public class TollInvoiceRepository(IDbContextFactory<TollDbContext> contextFacto
 
         foreach (DailyTollSummary summary in summaries)
         {
-            db.Entry(summary).State = EntityState.Unchanged;
-            db.Entry(summary).Property(s => s.TollInvoiceId).IsModified = true;
+            db.Entry(summary).State = EntityState.Modified;
         }
 
         await db.SaveChangesAsync(cancellationToken);
