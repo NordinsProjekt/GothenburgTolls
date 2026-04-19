@@ -2,10 +2,16 @@ namespace Entities.Types;
 
 public static class VehicleTypeExtensions
 {
-    /// <summary>
-    /// Returnerar true om fordonstypen är undantagen från trängselskatt.
-    /// Endast <see cref="VehicleType.Car"/> är avgiftsbelagd.
-    /// </summary>
     public static bool IsTollFree(this VehicleType vehicleType)
-        => vehicleType != VehicleType.Car;
+        => vehicleType switch
+        {
+            VehicleType.Car => false,
+            VehicleType.Motorbike => true,
+            VehicleType.Tractor => true,
+            VehicleType.Emergency => true,
+            VehicleType.Diplomat => true,
+            VehicleType.Foreign => true,
+            VehicleType.Military => true,
+            _ => throw new ArgumentOutOfRangeException(nameof(vehicleType), vehicleType, $"Unknown vehicle type: {(int)vehicleType}")
+        };
 }

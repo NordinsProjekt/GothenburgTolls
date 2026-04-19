@@ -1,94 +1,82 @@
 ﻿using Entities.Interfaces;
 using Entities.Types;
+using UseCases.Interfaces;
 
 namespace UseCases.HelperClass;
 
-public class TollCalculator
+public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService)
 {
-
-    /**
-     * Calculate the total toll fee for one day
-     *
-     * @param vehicle - the vehicle
-     * @param dates   - date and time of all passes on one day
-     * @return - the total toll fee for that day
-     */
-
-    public int GetTollFee(IVehicle vehicle, DateTime[] dates)
+    /// <summary>
+    /// Calculate the total toll fee for one day.
+    /// The maximum fee per day is configured via ITollRateService.
+    /// Within a 60-minute window only the highest single fee is charged.
+    /// </summary>
+    public int CalculateDailyTotalFee(IVehicle vehicle, DateTime[] dates)
     {
-        DateTime intervalStart = dates[0];
+        ArgumentNullException.ThrowIfNull(dates);
+        if (dates.Length == 0) return 0;
+
+        DateTime[] sortedDates = [.. dates.OrderBy(d => d)];
+
+        if (sortedDates.Length == 1) return Math.Min(CalculateSinglePassageFee(sortedDates[0], vehicle), tollRateService.MaxDailyFee);
+
+        DateTime intervalStart = sortedDates[0];
+        int intervalHighestFee = 0;
         int totalFee = 0;
-        foreach (DateTime date in dates)
+
+        foreach (DateTime date in sortedDates)
         {
-            int nextFee = GetTollFee(date, vehicle);
-            int tempFee = GetTollFee(intervalStart, vehicle);
+            int currentFee = CalculateSinglePassageFee(date, vehicle);
+            bool withinSameInterval = (date - intervalStart).TotalMinutes <= 60;
 
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            long minutes = diffInMillies / 1000 / 60;
-
-            if (minutes <= 60)
+            if (withinSameInterval)
             {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
+                if (currentFee > intervalHighestFee)
+                {
+                    totalFee += currentFee - intervalHighestFee;
+                    intervalHighestFee = currentFee;
+                }
             }
             else
             {
-                totalFee += nextFee;
+                totalFee += currentFee;
+                intervalStart = date;
+                intervalHighestFee = currentFee;
             }
         }
-        if (totalFee > 60) totalFee = 60;
-        return totalFee;
+
+        return Math.Min(totalFee, tollRateService.MaxDailyFee);
     }
 
     private bool IsTollFreeVehicle(IVehicle vehicle)
     {
-        if (vehicle == null) return false;
-        return Enum.TryParse<VehicleType>(vehicle.GetVehicleType(), out var type)
+        if (vehicle is null) return false;
+
+        return Enum.TryParse<VehicleType>(vehicle.GetVehicleType(), out VehicleType type)
                && type.IsTollFree();
     }
 
-    public int GetTollFee(DateTime date, IVehicle vehicle)
+    private int CalculateSinglePassageFee(DateTime date, IVehicle vehicle)
     {
         if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
-        int hour = date.Hour;
-        int minute = date.Minute;
-
-        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-        else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-        else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-        else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-        else if (hour >= 8 && hour <= 14 && minute >= 30 && minute <= 59) return 8;
-        else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-        else if (hour == 15 && minute >= 0 || hour == 16 && minute <= 59) return 18;
-        else if (hour == 17 && minute >= 0 && minute <= 59) return 13;
-        else if (hour == 18 && minute >= 0 && minute <= 29) return 8;
-        else return 0;
+        TimeOnly time = TimeOnly.FromDateTime(date);
+        return tollRateService.GetFeeForTime(time);
     }
 
+    /// <summary>
+    /// No toll on Saturdays, Sundays, public holidays,
+    /// the day before a public holiday, or during July.
+    /// </summary>
     private bool IsTollFreeDate(DateTime date)
     {
-        int year = date.Year;
-        int month = date.Month;
-        int day = date.Day;
+        if (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) return true;
+        if (date.Month == 7) return true;
 
-        if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) return true;
+        DateOnly dateOnly = DateOnly.FromDateTime(date);
+        if (holidayService.IsPublicHoliday(dateOnly)) return true;
+        if (holidayService.IsDayBeforePublicHoliday(dateOnly)) return true;
 
-        if (year == 2013)
-        {
-            if (month == 1 && day == 1 ||
-                month == 3 && (day == 28 || day == 29) ||
-                month == 4 && (day == 1 || day == 30) ||
-                month == 5 && (day == 1 || day == 8 || day == 9) ||
-                month == 6 && (day == 5 || day == 6 || day == 21) ||
-                month == 7 ||
-                month == 11 && day == 1 ||
-                month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
-            {
-                return true;
-            }
-        }
         return false;
     }
 }
