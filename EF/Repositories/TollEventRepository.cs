@@ -1,6 +1,7 @@
 ﻿using Entities.Interfaces;
 using Entities.Tolls;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace EFCore.Repositories;
 
@@ -9,8 +10,11 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     public async Task<Guid> CreateTollEventAsync(TollEvent tollEvent, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+
         await db.AddAsync(tollEvent, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return tollEvent.Id;
     }

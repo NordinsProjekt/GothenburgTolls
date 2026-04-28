@@ -78,8 +78,15 @@ public class Program
         {
             app.MapPost("/seed", async (
                     ITollEventService tollEventService,
+                    IDbContextFactory<TollDbContext> contextFactory,
                     CancellationToken cancellationToken) =>
                 {
+                    await using TollDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
+                    if (await db.TollEvents.AnyAsync(cancellationToken))
+                    {
+                        return Results.Conflict(new { error = "Database already contains toll events. Seed is only for empty databases." });
+                    }
+
                     var created = new List<object>();
                     foreach (VehiclePassageDto dto in SeedData.Passages)
                     {

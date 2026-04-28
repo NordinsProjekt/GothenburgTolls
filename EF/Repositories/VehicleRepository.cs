@@ -1,6 +1,7 @@
 ﻿using Entities.Bases;
 using Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace EFCore.Repositories;
 
@@ -9,9 +10,11 @@ public class VehicleRepository(IDbContextFactory<TollDbContext> contextFactory) 
     public async Task<Guid> CreateVehicle(Vehicle vehicle, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
 
         db.Add(vehicle);
         await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return vehicle.Id;
     }

@@ -9,16 +9,22 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
     /// <summary>
     /// Calculate the total toll fee for one day.
     /// The maximum fee per day is configured via ITollRateService.
-    /// Within a 60-minute window only the highest single fee is charged.
+    /// Within a 60-minute window (inclusive) only the highest single fee is charged.
     /// </summary>
     public int CalculateDailyTotalFee(IVehicle vehicle, DateTime[] dates)
     {
         ArgumentNullException.ThrowIfNull(dates);
-        if (dates.Length == 0) return 0;
+        if (dates.Length == 0)
+        {
+            return 0;
+        }
 
         DateTime[] sortedDates = [.. dates.OrderBy(d => d)];
 
-        if (sortedDates.Length == 1) return Math.Min(CalculateSinglePassageFee(sortedDates[0], vehicle), tollRateService.MaxDailyFee);
+        if (sortedDates.Length == 1)
+        {
+            return Math.Min(CalculateSinglePassageFee(sortedDates[0], vehicle), tollRateService.MaxDailyFee);
+        }
 
         DateTime intervalStart = sortedDates[0];
         int intervalHighestFee = 0;
