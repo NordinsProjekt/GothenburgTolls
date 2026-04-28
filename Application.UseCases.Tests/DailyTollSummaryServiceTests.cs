@@ -2,7 +2,6 @@ using Entities.Interfaces;
 using Entities.Tolls;
 using Entities.Vehicels;
 using NSubstitute;
-using UseCases.HelperClass;
 using UseCases.Interfaces;
 using UseCases.Services;
 
@@ -13,7 +12,7 @@ public class DailyTollSummaryServiceTests
     private readonly IVehicleRepository _vehicleRepository = Substitute.For<IVehicleRepository>();
     private readonly ITollEventRepository _tollEventRepository = Substitute.For<ITollEventRepository>();
     private readonly IDailyTollSummaryRepository _dailyTollSummaryRepository = Substitute.For<IDailyTollSummaryRepository>();
-    private readonly TollCalculator _tollCalculator;
+    private readonly ITollCalculator _tollCalculator = Substitute.For<ITollCalculator>();
     private readonly DailyTollSummaryService _sut;
 
     private static readonly DateOnly ValidDay = new(2025, 6, 16); // Monday
@@ -21,15 +20,7 @@ public class DailyTollSummaryServiceTests
 
     public DailyTollSummaryServiceTests()
     {
-        var holidayService = Substitute.For<ISwedishHolidayService>();
-        holidayService.IsPublicHoliday(Arg.Any<DateOnly>()).Returns(false);
-        holidayService.IsDayBeforePublicHoliday(Arg.Any<DateOnly>()).Returns(false);
-
-        var tollRateService = Substitute.For<ITollRateService>();
-        tollRateService.MaxDailyFee.Returns(60);
-        tollRateService.GetFeeForTime(Arg.Any<TimeOnly>()).Returns(18);
-
-        _tollCalculator = new TollCalculator(holidayService, tollRateService);
+        _tollCalculator.CalculateDailyTotalFee(Arg.Any<IVehicle>(), Arg.Any<DateTime[]>()).Returns(18);
 
         _sut = new DailyTollSummaryService(
             _vehicleRepository,

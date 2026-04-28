@@ -4,7 +4,7 @@ using UseCases.Interfaces;
 
 namespace UseCases.HelperClass;
 
-public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService)
+public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService) : ITollCalculator
 {
     /// <summary>
     /// Calculate the total toll fee for one day.

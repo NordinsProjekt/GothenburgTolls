@@ -2,7 +2,6 @@ using Entities.Bases;
 using Entities.Interfaces;
 using Entities.Tolls;
 using Factories;
-using UseCases.HelperClass;
 using UseCases.Interfaces;
 using UseCases.Validators;
 
@@ -12,7 +11,7 @@ public class DailyTollSummaryService(
     IVehicleRepository vehicleRepository,
     ITollEventRepository tollEventRepository,
     IDailyTollSummaryRepository dailyTollSummaryRepository,
-    TollCalculator tollCalculator) : IDailyTollSummaryService
+    ITollCalculator tollCalculator) : IDailyTollSummaryService
 {
     public async Task<DailyTollSummary> CreateAsync(string registrationNumber, DateOnly forDay, CancellationToken cancellationToken)
     {
