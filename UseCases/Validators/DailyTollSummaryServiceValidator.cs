@@ -10,7 +10,7 @@ internal static class DailyTollSummaryServiceValidator
 
     internal static void ValidateForDay(DateOnly forDay)
     {
-        if (forDay >= DateOnly.FromDateTime(DateTime.Today))
+        if (forDay >= DateOnly.FromDateTime(DateTimeOffset.Now.Date))
         {
             throw new ArgumentOutOfRangeException(nameof(forDay), forDay, "Cannot create a daily toll summary for today or a future date.");
         }

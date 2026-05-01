@@ -36,7 +36,7 @@ public class TollInvoiceServiceValidatorTests
     public void ValidateYear_WithCurrentYear_ShouldNotThrow()
     {
         var exception = Record.Exception(() =>
-            TollInvoiceServiceValidator.ValidateYear(DateTime.UtcNow.Year));
+            TollInvoiceServiceValidator.ValidateYear(DateTimeOffset.UtcNow.Year));
 
         Assert.Null(exception);
     }
@@ -61,7 +61,7 @@ public class TollInvoiceServiceValidatorTests
     public void ValidateYear_WithFutureYear_ShouldThrowArgumentOutOfRangeException()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            TollInvoiceServiceValidator.ValidateYear(DateTime.UtcNow.Year + 1));
+            TollInvoiceServiceValidator.ValidateYear(DateTimeOffset.UtcNow.Year + 1));
     }
 
     [Fact]

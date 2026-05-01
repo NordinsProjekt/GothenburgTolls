@@ -78,7 +78,7 @@ public class TollInvoiceServiceTests
     [Fact]
     public async Task CreateAsync_WithFutureYear_ShouldThrowArgumentOutOfRangeException()
     {
-        int futureYear = DateTime.UtcNow.Year + 1;
+        int futureYear = DateTimeOffset.UtcNow.Year + 1;
 
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
             () => _sut.CreateAsync(ValidRegNr, futureYear, ValidMonth, CancellationToken.None));

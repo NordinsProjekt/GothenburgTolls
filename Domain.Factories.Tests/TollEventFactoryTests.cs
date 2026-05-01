@@ -11,7 +11,7 @@ public class TollEventFactoryTests
     {
         var vehicleId = Guid.NewGuid();
 
-        var tollEvent = TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), ValidZone, vehicleId);
+        var tollEvent = TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), ValidZone, vehicleId);
 
         Assert.Equal(vehicleId, tollEvent.VehicleId);
     }
@@ -29,7 +29,7 @@ public class TollEventFactoryTests
     [Fact]
     public void Create_WithValidInput_ShouldReturnTollEventWithGivenZone()
     {
-        var tollEvent = TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), ValidZone, Guid.NewGuid());
+        var tollEvent = TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), ValidZone, Guid.NewGuid());
 
         Assert.Equal(ValidZone, tollEvent.Zone);
     }
@@ -37,7 +37,7 @@ public class TollEventFactoryTests
     [Fact]
     public void Create_WithZoneSurroundedByWhitespace_ShouldTrimZone()
     {
-        var tollEvent = TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), "  ZoneA  ", Guid.NewGuid());
+        var tollEvent = TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), "  ZoneA  ", Guid.NewGuid());
 
         Assert.Equal("ZoneA", tollEvent.Zone);
     }
@@ -61,7 +61,7 @@ public class TollEventFactoryTests
     [Fact]
     public void Create_WithFutureEventDateTime_ShouldThrowArgumentOutOfRangeException()
     {
-        var future = DateTime.UtcNow.AddHours(1);
+        var future = DateTimeOffset.UtcNow.AddHours(1);
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             TollEventFactory.Create(future, ValidZone, Guid.NewGuid()));
@@ -85,7 +85,7 @@ public class TollEventFactoryTests
     public void Create_WithInvalidZone_ShouldThrowArgumentException(string? zone)
     {
         Assert.Throws<ArgumentException>(() =>
-            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone!, Guid.NewGuid()));
+            TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), zone!, Guid.NewGuid()));
     }
 
     [Theory]
@@ -95,7 +95,7 @@ public class TollEventFactoryTests
     public void Create_WithInvalidZone_ShouldThrowWithZoneParamName(string? zone)
     {
         var ex = Assert.Throws<ArgumentException>(() =>
-            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone!, Guid.NewGuid()));
+            TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), zone!, Guid.NewGuid()));
 
         Assert.Equal("zone", ex.ParamName);
     }
@@ -106,7 +106,7 @@ public class TollEventFactoryTests
         var zone = new string('A', 65);
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone, Guid.NewGuid()));
+            TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), zone, Guid.NewGuid()));
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class TollEventFactoryTests
     {
         var zone = new string('A', 64);
 
-        var tollEvent = TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), zone, Guid.NewGuid());
+        var tollEvent = TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), zone, Guid.NewGuid());
 
         Assert.Equal(zone, tollEvent.Zone);
     }
@@ -123,14 +123,14 @@ public class TollEventFactoryTests
     public void Create_WithEmptyVehicleId_ShouldThrowArgumentException()
     {
         Assert.Throws<ArgumentException>(() =>
-            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), ValidZone, Guid.Empty));
+            TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), ValidZone, Guid.Empty));
     }
 
     [Fact]
     public void Create_WithEmptyVehicleId_ShouldThrowWithVehicleIdParamName()
     {
         var ex = Assert.Throws<ArgumentException>(() =>
-            TollEventFactory.Create(DateTime.UtcNow.AddMinutes(-1), ValidZone, Guid.Empty));
+            TollEventFactory.Create(DateTimeOffset.UtcNow.AddMinutes(-1), ValidZone, Guid.Empty));
 
         Assert.Equal("vehicleId", ex.ParamName);
     }

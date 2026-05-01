@@ -59,7 +59,7 @@
 @code {
     private readonly CancellationTokenSource _cts = new();
     private string _registrationNumber = string.Empty;
-    private DateOnly _forDay = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+    private DateOnly _forDay = DateOnly.FromDateTime(DateTimeOffset.Now.Date.AddDays(-1));
     private bool _isCreating;
     private string? _error;
     private DailyTollSummary? _createdSummary;
