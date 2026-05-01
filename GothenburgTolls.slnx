@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/3. Infrastructure/">
     <Project Path="EF/EFCore.csproj" />
+    <Project Path="QuestPdf/QuestPdfGenerator.csproj" Id="b84f689b-911c-4bee-8acb-7a1c36aa3b5e" />
   </Folder>
   <Folder Name="/4. Presentation/">
     <Project Path="GothenburgTolls/GothenburgTolls.csproj" />
