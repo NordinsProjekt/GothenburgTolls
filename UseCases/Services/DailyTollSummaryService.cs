@@ -3,6 +3,7 @@ using Entities.Interfaces;
 using Entities.Tolls;
 using Factories;
 using UseCases.Interfaces;
+using UseCases.Results;
 using UseCases.Validators;
 
 namespace UseCases.Services;
@@ -72,6 +73,40 @@ public class DailyTollSummaryService(
         {
             tollEvent.AssignToDailyTollSummary(summaryId);
         }
+    }
+
+    public async Task<BackfillResult> BackfillMissedAsync(CancellationToken cancellationToken)
+    {
+        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        List<TollEvent> unassigned = await tollEventRepository.GetUnassignedBeforeDateAsync(today, cancellationToken);
+
+        IEnumerable<IGrouping<(Guid VehicleId, DateOnly Day), TollEvent>> groups = unassigned
+            .Where(te => te.VehicleId.HasValue)
+            .GroupBy(te => (te.VehicleId!.Value, DateOnly.FromDateTime(te.EventDateTime.Date)));
+
+        int created = 0;
+        int skipped = 0;
+        int failed = 0;
+
+        foreach (IGrouping<(Guid VehicleId, DateOnly Day), TollEvent> group in groups)
+        {
+            try
+            {
+                Vehicle vehicle = await vehicleRepository.GetVehicleByIdAsync(group.Key.VehicleId, cancellationToken);
+                await CreateAsync(vehicle.RegistrationNumber, group.Key.Day, cancellationToken);
+                created++;
+            }
+            catch (InvalidOperationException)
+            {
+                skipped++;
+            }
+            catch
+            {
+                failed++;
+            }
+        }
+
+        return new BackfillResult(created, skipped, failed);
     }
 
     public async Task<List<DailyTollSummary>> GetAllByVehicleIdAsync(Guid vehicleId, CancellationToken cancellationToken)
