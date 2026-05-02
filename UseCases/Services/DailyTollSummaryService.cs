@@ -75,14 +75,32 @@ public class DailyTollSummaryService(
         }
     }
 
+    private static DateOnly GetSwedishDate(DateTimeOffset dateTimeOffset)
+    {
+        DateTimeOffset swedishDateTime = TimeZoneInfo.ConvertTime(dateTimeOffset, GetSwedishTimeZone());
+        return DateOnly.FromDateTime(swedishDateTime.DateTime);
+    }
+
+    private static TimeZoneInfo GetSwedishTimeZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        }
+    }
+
     public async Task<BackfillResult> BackfillMissedAsync(CancellationToken cancellationToken)
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        DateOnly today = GetSwedishDate(DateTimeOffset.UtcNow);
         List<TollEvent> unassigned = await tollEventRepository.GetUnassignedBeforeDateAsync(today, cancellationToken);
 
         IEnumerable<IGrouping<(Guid VehicleId, DateOnly Day), TollEvent>> groups = unassigned
             .Where(te => te.VehicleId.HasValue)
-            .GroupBy(te => (te.VehicleId!.Value, DateOnly.FromDateTime(te.EventDateTime.Date)));
+            .GroupBy(te => (te.VehicleId!.Value, GetSwedishDate(te.EventDateTime)));
 
         int created = 0;
         int skipped = 0;
