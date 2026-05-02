@@ -7,6 +7,7 @@
     <Project Path="UseCases/UseCases.csproj" />
   </Folder>
   <Folder Name="/3. Infrastructure/">
+    <Project Path="AzureTimedFunctions/AzureTimedFunctions.csproj" Id="babc817f-a9ce-494a-aa96-7398af1863e8" />
     <Project Path="EF/EFCore.csproj" />
     <Project Path="QuestPdf/QuestPdfGenerator.csproj" Id="b84f689b-911c-4bee-8acb-7a1c36aa3b5e" />
   </Folder>
@@ -20,4 +21,5 @@
     <Project Path="Infrastructure.EF.Tests/Infrastructure.EFCore.Tests.csproj" />
     <Project Path="Presentation.LogVehicleAPI.Tests/Presentation.LogVehicleAPI.Tests.csproj" Id="c2f65e07-31cb-43a1-be78-537d73782965" />
   </Folder>
+  <Project Path="AzureTimedFunctions.Tests/AzureTimedFunctions.Tests.csproj" />
 </Solution>

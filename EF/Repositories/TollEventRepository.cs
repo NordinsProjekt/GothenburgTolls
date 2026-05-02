@@ -54,6 +54,18 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<List<TollEvent>> GetUnassignedBeforeDateAsync(DateOnly before, CancellationToken cancellationToken)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        DateTimeOffset cutoff = new SwedishDateRange(before).Start;
+
+        return await db.TollEvents.AsNoTracking()
+            .Where(te => te.DailyTollSummaryId == null && te.EventDateTime < cutoff)
+            .OrderBy(te => te.EventDateTime)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<TollEvent>> GetUnassignedAsync(int count, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
