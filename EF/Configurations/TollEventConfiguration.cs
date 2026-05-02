@@ -10,6 +10,10 @@ internal class TollEventConfiguration : IEntityTypeConfiguration<TollEvent>
     {
         e.HasKey(te => te.Id);
         e.Property(te => te.EventDateTime)
+            .HasConversion(
+                eventDateTime => eventDateTime.UtcDateTime,
+                storedDateTime => new System.DateTimeOffset(System.DateTime.SpecifyKind(storedDateTime, System.DateTimeKind.Utc)))
+            .HasColumnType("datetime2")
             .IsRequired();
         e.Property(te => te.Zone).IsRequired().HasMaxLength(64);
 
