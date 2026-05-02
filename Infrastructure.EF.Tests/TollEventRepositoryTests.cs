@@ -31,7 +31,7 @@ public class TollEventRepositoryTests : IDisposable
     public async Task CreateTollEventAsync_WithValidTollEvent_ShouldReturnNonEmptyGuid()
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
-        var tollEvent = new TollEvent(DateTime.UtcNow, "Centrum", vehicleId);
+        var tollEvent = new TollEvent(DateTimeOffset.UtcNow, "Centrum", vehicleId);
 
         var id = await _sut.CreateTollEventAsync(tollEvent, CancellationToken.None);
 
@@ -42,7 +42,7 @@ public class TollEventRepositoryTests : IDisposable
     public async Task CreateTollEventAsync_WithValidTollEvent_ShouldPersistTollEventToDatabase()
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
-        var tollEvent = new TollEvent(DateTime.UtcNow, "Centrum", vehicleId);
+        var tollEvent = new TollEvent(DateTimeOffset.UtcNow, "Centrum", vehicleId);
 
         var id = await _sut.CreateTollEventAsync(tollEvent, CancellationToken.None);
 
@@ -55,7 +55,7 @@ public class TollEventRepositoryTests : IDisposable
     public async Task CreateTollEventAsync_WithValidTollEvent_ShouldPersistZone()
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
-        var tollEvent = new TollEvent(DateTime.UtcNow, "Centrum", vehicleId);
+        var tollEvent = new TollEvent(DateTimeOffset.UtcNow, "Centrum", vehicleId);
 
         await _sut.CreateTollEventAsync(tollEvent, CancellationToken.None);
 
@@ -68,7 +68,7 @@ public class TollEventRepositoryTests : IDisposable
     public async Task CreateTollEventAsync_WithValidTollEvent_ShouldPersistVehicleId()
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
-        var tollEvent = new TollEvent(DateTime.UtcNow, "Centrum", vehicleId);
+        var tollEvent = new TollEvent(DateTimeOffset.UtcNow, "Centrum", vehicleId);
 
         await _sut.CreateTollEventAsync(tollEvent, CancellationToken.None);
 
@@ -80,7 +80,7 @@ public class TollEventRepositoryTests : IDisposable
     [Fact]
     public async Task CreateTollEventAsync_WhenVehicleDoesNotExist_ShouldThrowDbUpdateException()
     {
-        var tollEvent = new TollEvent(DateTime.UtcNow, "Centrum", Guid.NewGuid());
+        var tollEvent = new TollEvent(DateTimeOffset.UtcNow, "Centrum", Guid.NewGuid());
 
         await Assert.ThrowsAsync<DbUpdateException>(() =>
             _sut.CreateTollEventAsync(tollEvent, CancellationToken.None));
@@ -91,7 +91,7 @@ public class TollEventRepositoryTests : IDisposable
     {
         var vehicleId = await SeedVehicleAsync("ABC123");
         var id = await _sut.CreateTollEventAsync(
-            new TollEvent(DateTime.UtcNow, "Centrum", vehicleId), CancellationToken.None);
+            new TollEvent(DateTimeOffset.UtcNow, "Centrum", vehicleId), CancellationToken.None);
 
         var result = await _sut.GetByIdAsync(id, CancellationToken.None);
 

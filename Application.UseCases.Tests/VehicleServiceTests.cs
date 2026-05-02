@@ -25,7 +25,7 @@ public class VehicleServiceTests
         _repository
             .GetVehicleByRegistrationNumberAsync("ABC123", Arg.Any<CancellationToken>())
             .Returns(existing);
-        var dto = new VehiclePassageDto("ABC123", DateTime.UtcNow, "ZoneA", VehicleType.Car);
+        var dto = new VehiclePassageDto("ABC123", DateTimeOffset.UtcNow, "ZoneA", VehicleType.Car);
 
         var result = await _sut.GetOrCreateAsync(dto, CancellationToken.None);
 
@@ -39,7 +39,7 @@ public class VehicleServiceTests
         _repository
             .GetVehicleByRegistrationNumberAsync("ABC123", Arg.Any<CancellationToken>())
             .Returns(existing);
-        var dto = new VehiclePassageDto("ABC123", DateTime.UtcNow, "ZoneA", VehicleType.Car);
+        var dto = new VehiclePassageDto("ABC123", DateTimeOffset.UtcNow, "ZoneA", VehicleType.Car);
 
         await _sut.GetOrCreateAsync(dto, CancellationToken.None);
 
@@ -52,7 +52,7 @@ public class VehicleServiceTests
         _repository
             .GetVehicleByRegistrationNumberAsync("XYZ789", Arg.Any<CancellationToken>())
             .Returns((Vehicle?)null);
-        var dto = new VehiclePassageDto("XYZ789", DateTime.UtcNow, "ZoneB", VehicleType.Motorbike);
+        var dto = new VehiclePassageDto("XYZ789", DateTimeOffset.UtcNow, "ZoneB", VehicleType.Motorbike);
 
         var result = await _sut.GetOrCreateAsync(dto, CancellationToken.None);
 
@@ -65,7 +65,7 @@ public class VehicleServiceTests
         _repository
             .GetVehicleByRegistrationNumberAsync("XYZ789", Arg.Any<CancellationToken>())
             .Returns((Vehicle?)null);
-        var dto = new VehiclePassageDto("XYZ789", DateTime.UtcNow, "ZoneB", VehicleType.Motorbike);
+        var dto = new VehiclePassageDto("XYZ789", DateTimeOffset.UtcNow, "ZoneB", VehicleType.Motorbike);
 
         var result = await _sut.GetOrCreateAsync(dto, CancellationToken.None);
 
@@ -78,7 +78,7 @@ public class VehicleServiceTests
         _repository
             .GetVehicleByRegistrationNumberAsync("XYZ789", Arg.Any<CancellationToken>())
             .Returns((Vehicle?)null);
-        var dto = new VehiclePassageDto("XYZ789", DateTime.UtcNow, "ZoneB", VehicleType.Motorbike);
+        var dto = new VehiclePassageDto("XYZ789", DateTimeOffset.UtcNow, "ZoneB", VehicleType.Motorbike);
 
         await _sut.GetOrCreateAsync(dto, CancellationToken.None);
 

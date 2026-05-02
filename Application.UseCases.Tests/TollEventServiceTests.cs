@@ -22,7 +22,7 @@ public class TollEventServiceTests
     }
 
     private static VehiclePassageDto Dto() =>
-        new("ABC123", DateTime.UtcNow.AddMinutes(-1), "ZoneA", VehicleType.Car);
+        new("ABC123", DateTimeOffset.UtcNow.AddMinutes(-1), "ZoneA", VehicleType.Car);
 
     private static Vehicle PersistedVehicle() =>
         new Car("ABC123") { Id = Guid.NewGuid() };
@@ -147,7 +147,7 @@ public class TollEventServiceTests
     [Fact]
     public async Task GetRecentAsync_WithValidCount_ShouldReturnEventsFromRepository()
     {
-        var expected = new List<TollEvent> { new(DateTime.UtcNow.AddMinutes(-1), "ZoneA", Guid.NewGuid()) };
+        var expected = new List<TollEvent> { new(DateTimeOffset.UtcNow.AddMinutes(-1), "ZoneA", Guid.NewGuid()) };
         _tollEventRepository.GetRecentAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(expected);
 

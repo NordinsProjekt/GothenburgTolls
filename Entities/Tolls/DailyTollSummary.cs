@@ -6,7 +6,7 @@ public class DailyTollSummary
 {
     public Guid Id { get; init; }
 
-    public DateTime Created { get; }
+    public DateTimeOffset Created { get; }
     public DateOnly ForDay { get; }
     public decimal Amount { get; }
 
@@ -36,7 +36,7 @@ public class DailyTollSummary
         Id = Guid.NewGuid();
         ForDay = forDay;
         Amount = amount;
-        Created = DateTime.Now;
+        Created = DateTimeOffset.Now;
         VehicleId = vehicleId;
     }
 }

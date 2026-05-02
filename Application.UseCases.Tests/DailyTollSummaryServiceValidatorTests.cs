@@ -35,7 +35,7 @@ public class DailyTollSummaryServiceValidatorTests
     [Fact]
     public void ValidateForDay_WithPastDate_ShouldNotThrow()
     {
-        DateOnly yesterday = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+        DateOnly yesterday = DateOnly.FromDateTime(DateTimeOffset.Now.Date.AddDays(-1));
 
         var exception = Record.Exception(() => DailyTollSummaryServiceValidator.ValidateForDay(yesterday));
 
@@ -45,7 +45,7 @@ public class DailyTollSummaryServiceValidatorTests
     [Fact]
     public void ValidateForDay_WithToday_ShouldThrowArgumentOutOfRangeException()
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        DateOnly today = DateOnly.FromDateTime(DateTimeOffset.Now.Date);
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             DailyTollSummaryServiceValidator.ValidateForDay(today));
@@ -54,7 +54,7 @@ public class DailyTollSummaryServiceValidatorTests
     [Fact]
     public void ValidateForDay_WithFutureDate_ShouldThrowArgumentOutOfRangeException()
     {
-        DateOnly future = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+        DateOnly future = DateOnly.FromDateTime(DateTimeOffset.Now.Date.AddDays(1));
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             DailyTollSummaryServiceValidator.ValidateForDay(future));
@@ -63,7 +63,7 @@ public class DailyTollSummaryServiceValidatorTests
     [Fact]
     public void ValidateForDay_WithToday_ShouldHaveCorrectParamName()
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        DateOnly today = DateOnly.FromDateTime(DateTimeOffset.Now.Date);
 
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
             DailyTollSummaryServiceValidator.ValidateForDay(today));

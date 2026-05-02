@@ -20,7 +20,7 @@ public class DailyTollSummaryServiceTests
 
     public DailyTollSummaryServiceTests()
     {
-        _tollCalculator.CalculateDailyTotalFee(Arg.Any<IVehicle>(), Arg.Any<DateTime[]>()).Returns(18);
+        _tollCalculator.CalculateDailyTotalFee(Arg.Any<IVehicle>(), Arg.Any<DateTimeOffset[]>()).Returns(18);
 
         _sut = new DailyTollSummaryService(
             _vehicleRepository,

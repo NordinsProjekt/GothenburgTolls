@@ -13,7 +13,7 @@ public class TollInvoice
     public int Month { get; }
     public decimal Sum => TollSummary.Sum(ts => ts.Amount);
 
-    public DateTime Created { get; }
+    public DateTimeOffset Created { get; }
 
     public IReadOnlyCollection<DailyTollSummary> TollSummary { get; init; } = new List<DailyTollSummary>();
 
@@ -31,7 +31,7 @@ public class TollInvoice
         VehicleId = vehicleId;
         Year = year;
         Month = month;
-        Created = DateTime.Now;
+        Created = DateTimeOffset.Now;
         TollSummary = new List<DailyTollSummary>(tollSummary);
     }
 }

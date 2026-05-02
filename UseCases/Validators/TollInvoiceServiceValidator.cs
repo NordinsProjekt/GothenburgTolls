@@ -11,7 +11,7 @@ internal static class TollInvoiceServiceValidator
     internal static void ValidateYear(int year)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(year, 2013, nameof(year));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, DateTime.UtcNow.Year, nameof(year));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, DateTimeOffset.UtcNow.Year, nameof(year));
     }
 
     internal static void ValidateMonth(int month)

@@ -65,8 +65,8 @@
 @code {
     private readonly CancellationTokenSource _cts = new();
     private string _registrationNumber = string.Empty;
-    private int _year = DateTime.Today.Year;
-    private int _month = DateTime.Today.Month == 1 ? 12 : DateTime.Today.Month - 1;
+    private int _year;
+    private int _month;
     private bool _isCreating;
     private string? _error;
     private TollInvoice? _createdInvoice;
@@ -74,6 +74,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var now = DateTimeOffset.Now;
+        _month = now.Month == 1 ? 12 : now.Month - 1;
+        _year = now.Month == 1 ? now.Year - 1 : now.Year;
         await LoadInvoicesAsync();
     }
 

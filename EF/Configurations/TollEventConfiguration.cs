@@ -1,7 +1,6 @@
 ﻿using Entities.Tolls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EFCore.Configurations;
 
@@ -11,10 +10,11 @@ internal class TollEventConfiguration : IEntityTypeConfiguration<TollEvent>
     {
         e.HasKey(te => te.Id);
         e.Property(te => te.EventDateTime)
-            .IsRequired()
-            .HasConversion(new ValueConverter<DateTimeOffset, DateTime>(
-                v => v.UtcDateTime,
-                v => new DateTimeOffset(DateTime.SpecifyKind(v, DateTimeKind.Utc))));
+            .HasConversion(
+                eventDateTime => eventDateTime.UtcDateTime,
+                storedDateTime => new System.DateTimeOffset(System.DateTime.SpecifyKind(storedDateTime, System.DateTimeKind.Utc)))
+            .HasColumnType("datetime2")
+            .IsRequired();
         e.Property(te => te.Zone).IsRequired().HasMaxLength(64);
 
         e.HasIndex(te => te.DailyTollSummaryId);

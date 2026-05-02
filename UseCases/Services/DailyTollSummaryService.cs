@@ -59,8 +59,8 @@ public class DailyTollSummaryService(
 
     private int CalculateFee(Vehicle vehicle, List<TollEvent> tollEvents)
     {
-        DateTime[] eventDateTimes = tollEvents
-            .Select(e => e.EventDateTime.LocalDateTime)
+        DateTimeOffset[] eventDateTimes = tollEvents
+            .Select(e => e.EventDateTime)
             .ToArray();
 
         return tollCalculator.CalculateDailyTotalFee(vehicle, eventDateTimes);
