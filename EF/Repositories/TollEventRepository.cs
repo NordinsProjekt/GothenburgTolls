@@ -61,7 +61,6 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
         DateTimeOffset cutoff = new DateTimeOffset(before.ToDateTime(TimeOnly.MinValue), TimeSpan.FromHours(1));
 
         return await db.TollEvents.AsNoTracking()
-            .Include(te => te.Vehicle)
             .Where(te => te.DailyTollSummaryId == null && te.EventDateTime < cutoff)
             .OrderBy(te => te.EventDateTime)
             .ToListAsync(cancellationToken);
