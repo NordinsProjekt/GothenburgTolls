@@ -58,7 +58,7 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        DateTimeOffset cutoff = new DateTimeOffset(before.ToDateTime(TimeOnly.MinValue), TimeSpan.FromHours(1));
+        DateTimeOffset cutoff = new SwedishDateRange(before).Start;
 
         return await db.TollEvents.AsNoTracking()
             .Where(te => te.DailyTollSummaryId == null && te.EventDateTime < cutoff)

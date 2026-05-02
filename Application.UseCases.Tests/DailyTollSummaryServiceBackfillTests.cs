@@ -70,7 +70,7 @@ public class DailyTollSummaryServiceBackfillTests
             .Returns(false);
         _tollEventRepository.GetAllByRegistrationAsync("ABC123", Yesterday, Arg.Any<CancellationToken>())
             .Returns([tollEvent]);
-        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTimeOffset[]>())
+        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTime[]>())
             .Returns(50);
         _dailyTollSummaryRepository.CreateWithTollEventsAsync(
             Arg.Any<DailyTollSummary>(), Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>())
@@ -98,7 +98,7 @@ public class DailyTollSummaryServiceBackfillTests
             .Returns(false);
         _tollEventRepository.GetAllByRegistrationAsync("ABC123", Yesterday, Arg.Any<CancellationToken>())
             .Returns([tollEvent]);
-        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTimeOffset[]>())
+        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTime[]>())
             .Returns(50);
         _dailyTollSummaryRepository.CreateWithTollEventsAsync(
             Arg.Any<DailyTollSummary>(), Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>())
@@ -145,7 +145,7 @@ public class DailyTollSummaryServiceBackfillTests
             .Returns(false);
         _tollEventRepository.GetAllByRegistrationAsync("ABC123", Yesterday, Arg.Any<CancellationToken>())
             .Returns([tollEvent]);
-        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTimeOffset[]>())
+        _tollCalculator.CalculateDailyTotalFee(Arg.Any<Entities.Bases.Vehicle>(), Arg.Any<DateTime[]>())
             .Returns(50);
         _dailyTollSummaryRepository.CreateWithTollEventsAsync(
             Arg.Any<DailyTollSummary>(), Arg.Any<IReadOnlyList<TollEvent>>(), Arg.Any<CancellationToken>())
