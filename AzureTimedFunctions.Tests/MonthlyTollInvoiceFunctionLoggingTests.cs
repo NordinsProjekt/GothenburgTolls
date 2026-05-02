@@ -44,13 +44,23 @@ public class MonthlyTollInvoiceFunctionLoggingTests
     }
 
     [Fact]
-    public async Task RunAsync_WhenTriggered_ShouldLogPreviousMonthAndYear()
+    public async Task RunAsync_WhenTriggered_ShouldLogPreviousYear()
     {
         _vehicleRepository.GetAllVehicleAsync(Arg.Any<CancellationToken>()).Returns([]);
 
         await _function.RunAsync(Substitute.For<TimerInfo>(), CancellationToken.None);
 
         Assert.True(_fakeLogger.HasEntry(LogLevel.Information, PreviousMonth.Year.ToString()));
+    }
+
+    [Fact]
+    public async Task RunAsync_WhenTriggered_ShouldLogPreviousMonth()
+    {
+        _vehicleRepository.GetAllVehicleAsync(Arg.Any<CancellationToken>()).Returns([]);
+
+        await _function.RunAsync(Substitute.For<TimerInfo>(), CancellationToken.None);
+
+        Assert.True(_fakeLogger.HasEntry(LogLevel.Information, $"{PreviousMonth.Year}-{PreviousMonth.Month:D2}"));
     }
 
     [Fact]

@@ -2,6 +2,7 @@ using Entities.Bases;
 using Entities.Interfaces;
 using Entities.Tolls;
 using Factories;
+using UseCases.Exceptions;
 using UseCases.Interfaces;
 using UseCases.Results;
 using UseCases.Validators;
@@ -75,32 +76,14 @@ public class DailyTollSummaryService(
         }
     }
 
-    private static DateOnly GetSwedishDate(DateTimeOffset dateTimeOffset)
-    {
-        DateTimeOffset swedishDateTime = TimeZoneInfo.ConvertTime(dateTimeOffset, GetSwedishTimeZone());
-        return DateOnly.FromDateTime(swedishDateTime.DateTime);
-    }
-
-    private static TimeZoneInfo GetSwedishTimeZone()
-    {
-        try
-        {
-            return TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            return TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
-        }
-    }
-
     public async Task<BackfillResult> BackfillMissedAsync(CancellationToken cancellationToken)
     {
-        DateOnly today = GetSwedishDate(DateTimeOffset.UtcNow);
+        DateOnly today = SwedishTimeHelper.Today();
         List<TollEvent> unassigned = await tollEventRepository.GetUnassignedBeforeDateAsync(today, cancellationToken);
 
         IEnumerable<IGrouping<(Guid VehicleId, DateOnly Day), TollEvent>> groups = unassigned
             .Where(te => te.VehicleId.HasValue)
-            .GroupBy(te => (te.VehicleId!.Value, GetSwedishDate(te.EventDateTime)));
+            .GroupBy(te => (te.VehicleId!.Value, SwedishTimeHelper.ToDate(te.EventDateTime)));
 
         int created = 0;
         int skipped = 0;
@@ -110,11 +93,13 @@ public class DailyTollSummaryService(
         {
             try
             {
-                Vehicle vehicle = await vehicleRepository.GetVehicleByIdAsync(group.Key.VehicleId, cancellationToken);
-                await CreateAsync(vehicle.RegistrationNumber, group.Key.Day, cancellationToken);
+                Vehicle vehicle = await RunOrThrowSkippedAsync(
+                    () => vehicleRepository.GetVehicleByIdAsync(group.Key.VehicleId, cancellationToken));
+                await RunOrThrowSkippedAsync(
+                    () => CreateAsync(vehicle.RegistrationNumber, group.Key.Day, cancellationToken));
                 created++;
             }
-            catch (InvalidOperationException)
+            catch (BackfillSkippedException)
             {
                 skipped++;
             }
@@ -126,6 +111,21 @@ public class DailyTollSummaryService(
 
         return new BackfillResult(created, skipped, failed);
     }
+
+    private static async Task<T> RunOrThrowSkippedAsync<T>(Func<Task<T>> action)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new BackfillSkippedException(ex.Message, ex);
+        }
+    }
+
+    private static async Task RunOrThrowSkippedAsync(Func<Task> action) =>
+        await RunOrThrowSkippedAsync<bool>(async () => { await action(); return true; });
 
     public async Task<List<DailyTollSummary>> GetAllByVehicleIdAsync(Guid vehicleId, CancellationToken cancellationToken)
     {

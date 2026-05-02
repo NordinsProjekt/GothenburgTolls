@@ -1,5 +1,6 @@
 using Entities.Bases;
 using Entities.Interfaces;
+using Entities.Tolls;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using UseCases.Interfaces;
@@ -20,7 +21,7 @@ public class DailyTollSummaryFunction(
     {
         _logger.LogInformation("DailyTollSummaryFunction triggered at: {Now}", DateTime.UtcNow);
 
-        DateOnly yesterday = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+        DateOnly yesterday = SwedishTimeHelper.Today().AddDays(-1);
         _logger.LogInformation("Processing daily toll summaries for date: {Date}", yesterday);
 
         List<Vehicle> vehicles = await vehicleRepository.GetAllVehicleAsync(cancellationToken);

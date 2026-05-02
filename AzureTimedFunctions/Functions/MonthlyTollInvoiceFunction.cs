@@ -1,5 +1,6 @@
 using Entities.Bases;
 using Entities.Interfaces;
+using Entities.Tolls;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using UseCases.Interfaces;
@@ -20,8 +21,8 @@ public class MonthlyTollInvoiceFunction(
     {
         _logger.LogInformation("MonthlyTollInvoiceFunction triggered at: {Now}", DateTime.UtcNow);
 
-        DateTime today = DateTime.Today;
-        DateTime previousMonth = today.AddMonths(-1);
+        DateOnly today = SwedishTimeHelper.Today();
+        DateOnly previousMonth = today.AddMonths(-1);
         int year = previousMonth.Year;
         int month = previousMonth.Month;
 
