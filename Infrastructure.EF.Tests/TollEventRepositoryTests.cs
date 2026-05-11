@@ -299,4 +299,39 @@ public class TollEventRepositoryTests : IDisposable
     }
 
     public void Dispose() => _factory.Dispose();
+
+    // --- DeleteTollEventAsync ---
+
+    [Fact]
+    public async Task DeleteTollEventAsync_WhenTollEventExists_ShouldReturnTrue()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        var id = await _sut.CreateTollEventAsync(
+            new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+
+        var result = await _sut.DeleteTollEventAsync(id, CancellationToken.None);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task DeleteTollEventAsync_WhenTollEventExists_ShouldRemoveRecordFromDatabase()
+    {
+        var vehicleId = await SeedVehicleAsync("ABC123");
+        var id = await _sut.CreateTollEventAsync(
+            new TollEvent(FixedEventDateTime, "Centrum", vehicleId), CancellationToken.None);
+
+        await _sut.DeleteTollEventAsync(id, CancellationToken.None);
+
+        await using var verify = _factory.CreateDbContext();
+        Assert.False(await verify.TollEvents.AnyAsync(te => te.Id == id));
+    }
+
+    [Fact]
+    public async Task DeleteTollEventAsync_WhenIdDoesNotExist_ShouldReturnFalse()
+    {
+        var result = await _sut.DeleteTollEventAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(result);
+    }
 }

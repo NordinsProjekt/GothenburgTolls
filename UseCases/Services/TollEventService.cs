@@ -40,6 +40,7 @@ public class TollEventService(
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
+        TollEventServiceValidator.ValidateId(id);
         return await tollEventRepository.DeleteTollEventAsync(id, cancellationToken);
     }
 }

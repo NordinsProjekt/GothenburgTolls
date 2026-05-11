@@ -6,8 +6,19 @@ namespace UseCases.HelperClass;
 
 public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService) : ITollCalculator
 {
-    private static readonly TimeZoneInfo SwedishTimeZone =
-        TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+    private static readonly TimeZoneInfo SwedishTimeZone = GetSwedishTimeZone();
+
+    private static TimeZoneInfo GetSwedishTimeZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        }
+    }
 
     /// <summary>
     /// Calculate the total toll fee for one day.

@@ -87,7 +87,7 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
 
     /// <summary>
     /// Returns all toll events that have not yet been assigned to a <c>DailyTollSummary</c>
-    /// and whose <c>EventDateTime</c> is before the start of the given date (Swedish time, UTC+1).
+    /// and whose <c>EventDateTime</c> is before the start of the given date (Europe/Stockholm, CET/CEST).
     /// Results are ordered by <c>EventDateTime</c> ascending.
     /// </summary>
     /// <param name="before">Cutoff date; events before midnight of this date are included.</param>
@@ -129,15 +129,18 @@ public class TollEventRepository(IDbContextFactory<TollDbContext> contextFactory
     /// </summary>
     /// <param name="id">The unique identifier of the toll event to delete.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
-    /// <returns><c>true</c> if the toll event was deleted; otherwise throws.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when no toll event with the given id exists.</exception>
+    /// <returns><c>true</c> if the toll event was deleted; <c>false</c> if no matching record was found.</returns>
     public async Task<bool> DeleteTollEventAsync(Guid id, CancellationToken cancellationToken)
     {
         await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         TollEvent? tollEvent = await db.TollEvents.FirstOrDefaultAsync(te => te.Id == id, cancellationToken);
 
-        ArgumentNullException.ThrowIfNull(tollEvent);
+        if (tollEvent is null)
+        {
+            return false;
+        }
+
         db.Remove(tollEvent);
         await db.SaveChangesAsync(cancellationToken);
 
