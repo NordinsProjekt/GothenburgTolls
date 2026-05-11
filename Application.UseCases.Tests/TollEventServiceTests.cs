@@ -180,4 +180,64 @@ public class TollEventServiceTests
             Arg.Any<int>(),
             Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task DeleteAsync_WhenIdIsValid_ShouldCallDeleteTollEventOnRepository()
+    {
+        var id = Guid.NewGuid();
+        _tollEventRepository.DeleteTollEventAsync(id, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        await _sut.DeleteAsync(id, CancellationToken.None);
+
+        await _tollEventRepository.Received(1).DeleteTollEventAsync(id, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenRepositoryReturnsTrue_ShouldReturnTrue()
+    {
+        var id = Guid.NewGuid();
+        _tollEventRepository.DeleteTollEventAsync(id, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var result = await _sut.DeleteAsync(id, CancellationToken.None);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenRepositoryReturnsFalse_ShouldReturnFalse()
+    {
+        var id = Guid.NewGuid();
+        _tollEventRepository.DeleteTollEventAsync(id, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var result = await _sut.DeleteAsync(id, CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenIdIsEmpty_ShouldThrowArgumentOutOfRangeException()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+            _sut.DeleteAsync(Guid.Empty, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenIdIsEmpty_ShouldNotCallRepository()
+    {
+        try
+        {
+            await _sut.DeleteAsync(Guid.Empty, CancellationToken.None);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // expected
+        }
+
+        await _tollEventRepository.DidNotReceive().DeleteTollEventAsync(
+            Arg.Any<Guid>(),
+            Arg.Any<CancellationToken>());
+    }
 }

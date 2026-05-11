@@ -13,4 +13,9 @@ internal static class TollEventServiceValidator
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
     }
+
+    internal static void ValidateId(Guid id)
+    {
+        ArgumentOutOfRangeException.ThrowIfEqual(id, Guid.Empty);
+    }
 }
