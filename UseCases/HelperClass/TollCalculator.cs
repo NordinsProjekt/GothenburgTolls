@@ -6,12 +6,15 @@ namespace UseCases.HelperClass;
 
 public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService) : ITollCalculator
 {
+    private static readonly TimeZoneInfo SwedishTimeZone =
+        TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+
     /// <summary>
     /// Calculate the total toll fee for one day.
     /// The maximum fee per day is configured via ITollRateService.
     /// Within a 60-minute window (inclusive) only the highest single fee is charged.
     /// </summary>
-    public int CalculateDailyTotalFee(IVehicle vehicle, DateTime[] dates)
+    public int CalculateDailyTotalFee(IVehicle vehicle, DateTimeOffset[] dates)
     {
         ArgumentNullException.ThrowIfNull(dates);
         if (dates.Length == 0)
@@ -19,18 +22,18 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
             return 0;
         }
 
-        DateTime[] sortedDates = [.. dates.OrderBy(d => d)];
+        DateTimeOffset[] sortedDates = [.. dates.OrderBy(d => d)];
 
         if (sortedDates.Length == 1)
         {
             return Math.Min(CalculateSinglePassageFee(sortedDates[0], vehicle), tollRateService.MaxDailyFee);
         }
 
-        DateTime intervalStart = sortedDates[0];
+        DateTimeOffset intervalStart = sortedDates[0];
         int intervalHighestFee = 0;
         int totalFee = 0;
 
-        foreach (DateTime date in sortedDates)
+        foreach (DateTimeOffset date in sortedDates)
         {
             int currentFee = CalculateSinglePassageFee(date, vehicle);
             bool withinSameInterval = (date - intervalStart).TotalMinutes <= 60;
@@ -62,11 +65,12 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
                && type.IsTollFree();
     }
 
-    private int CalculateSinglePassageFee(DateTime date, IVehicle vehicle)
+    private int CalculateSinglePassageFee(DateTimeOffset date, IVehicle vehicle)
     {
         if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
-        TimeOnly time = TimeOnly.FromDateTime(date);
+        DateTime swedishTime = TimeZoneInfo.ConvertTime(date, SwedishTimeZone).DateTime;
+        TimeOnly time = TimeOnly.FromTimeSpan(swedishTime.TimeOfDay);
         return tollRateService.GetFeeForTime(time);
     }
 
@@ -74,12 +78,13 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
     /// No toll on Saturdays, Sundays, public holidays,
     /// the day before a public holiday, or during July.
     /// </summary>
-    private bool IsTollFreeDate(DateTime date)
+    private bool IsTollFreeDate(DateTimeOffset date)
     {
-        if (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) return true;
-        if (date.Month == 7) return true;
+        DateTime local = TimeZoneInfo.ConvertTime(date, SwedishTimeZone).DateTime;
+        if (local.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) return true;
+        if (local.Month == 7) return true;
 
-        DateOnly dateOnly = DateOnly.FromDateTime(date);
+        DateOnly dateOnly = DateOnly.FromDateTime(local);
         if (holidayService.IsPublicHoliday(dateOnly)) return true;
         if (holidayService.IsDayBeforePublicHoliday(dateOnly)) return true;
 

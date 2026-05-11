@@ -4,5 +4,5 @@ namespace UseCases.Interfaces;
 
 public interface ITollCalculator
 {
-    int CalculateDailyTotalFee(IVehicle vehicle, DateTime[] dates);
+    int CalculateDailyTotalFee(IVehicle vehicle, DateTimeOffset[] dates);
 }
