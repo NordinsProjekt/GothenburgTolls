@@ -17,9 +17,9 @@
   </Folder>
   <Folder Name="/5. Tests/">
     <Project Path="Application.UseCases.Tests/Application.UseCases.Tests.csproj" Id="6fbed79b-f87b-4179-93a8-36d814e331dc" />
+    <Project Path="AzureTimedFunctions.Tests/AzureTimedFunctions.Tests.csproj" />
     <Project Path="Domain.Factories.Tests/Domain.Factories.Tests.csproj" Id="6fa134db-c995-430a-8fb0-09986be1368a" />
     <Project Path="Infrastructure.EF.Tests/Infrastructure.EFCore.Tests.csproj" />
     <Project Path="Presentation.LogVehicleAPI.Tests/Presentation.LogVehicleAPI.Tests.csproj" Id="c2f65e07-31cb-43a1-be78-537d73782965" />
   </Folder>
-  <Project Path="AzureTimedFunctions.Tests/AzureTimedFunctions.Tests.csproj" />
 </Solution>

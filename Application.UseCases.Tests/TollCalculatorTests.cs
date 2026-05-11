@@ -29,29 +29,29 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_OnSaturday_ShouldReturnZero()
     {
-        DateTimeOffset saturday = new DateTimeOffset(2025, 6, 7, 8, 0, 0, TimeSpan.Zero);
+        DateTimeOffset saturday = new DateTimeOffset(2025, 6, 7, 8, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [saturday]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_OnSunday_ShouldReturnZero()
     {
-        DateTimeOffset sunday = new DateTimeOffset(2025, 6, 8, 8, 0, 0, TimeSpan.Zero);
+        DateTimeOffset sunday = new DateTimeOffset(2025, 6, 8, 8, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [sunday]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_DuringJuly_ShouldReturnZero()
     {
-        DateTimeOffset julyWeekday = new DateTimeOffset(2025, 7, 1, 8, 0, 0, TimeSpan.Zero);
+        DateTimeOffset julyWeekday = new DateTimeOffset(2025, 7, 1, 8, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [julyWeekday]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_OnPublicHoliday_ShouldReturnZero()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 1, 6, 8, 0, 0, TimeSpan.Zero);
-        _holidayService.IsPublicHoliday(DateOnly.FromDateTime(date.DateTime)).Returns(true);
+        DateTimeOffset date = new DateTimeOffset(2025, 1, 6, 8, 0, 0, TimeSpan.FromHours(1));
+        _holidayService.IsPublicHoliday(new DateOnly(2025, 1, 6)).Returns(true);
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [date]));
     }
@@ -59,8 +59,8 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_OnDayBeforePublicHoliday_ShouldReturnZero()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 5, 8, 0, 0, TimeSpan.Zero);
-        _holidayService.IsDayBeforePublicHoliday(DateOnly.FromDateTime(date.DateTime)).Returns(true);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 5, 8, 0, 0, TimeSpan.FromHours(2));
+        _holidayService.IsDayBeforePublicHoliday(new DateOnly(2025, 6, 5)).Returns(true);
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [date]));
     }
@@ -70,14 +70,14 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_WithTollFreeVehicle_ShouldReturnZero()
     {
-        DateTimeOffset weekday = new DateTimeOffset(2025, 6, 2, 8, 0, 0, TimeSpan.Zero);
+        DateTimeOffset weekday = new DateTimeOffset(2025, 6, 2, 8, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_motorbike, [weekday]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_NullVehicle_ShouldReturnFee()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(18, _sut.CalculateDailyTotalFee(null!, [date]));
     }
 
@@ -109,7 +109,7 @@ public class TollCalculatorTests
     [InlineData(19, 0, 0)]
     public void CalculateDailyTotalFee_AtSpecificTime_ShouldReturnExpectedFee(int hour, int minute, int expectedFee)
     {
-        DateTimeOffset date = new(2025, 6, 2, hour, minute, 0, TimeSpan.Zero);
+        DateTimeOffset date = new(2025, 6, 2, hour, minute, 0, TimeSpan.FromHours(2));
         Assert.Equal(expectedFee, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
@@ -120,11 +120,11 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 16, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 17, 31, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 16, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 17, 31, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(60, _sut.CalculateDailyTotalFee(_car, dates));
@@ -137,8 +137,8 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 15, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 15, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, dates));
@@ -149,9 +149,9 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 6, 55, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 6, 55, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(13, _sut.CalculateDailyTotalFee(_car, dates));
@@ -162,8 +162,8 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 1, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 1, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(26, _sut.CalculateDailyTotalFee(_car, dates));
@@ -174,8 +174,8 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, dates));
@@ -186,8 +186,8 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, dates));
@@ -198,10 +198,10 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(31, _sut.CalculateDailyTotalFee(_car, dates));
@@ -212,7 +212,7 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_SinglePassage_ShouldReturnThatFee()
     {
-        DateTimeOffset[] dates = [new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero)];
+        DateTimeOffset[] dates = [new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2))];
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, dates));
     }
 
@@ -223,16 +223,16 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] unsorted =
         [
-            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.Zero), // 18
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),   // 18
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),  // 8
+            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.FromHours(2)), // 18
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),   // 18
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),  // 8
         ];
 
         DateTimeOffset[] sorted =
         [
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(
@@ -245,9 +245,9 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 5, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 19, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 23, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 5, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 19, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 23, 0, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, dates));
@@ -258,9 +258,9 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 7, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 7, 8, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 7, 15, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 7, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 7, 8, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 7, 15, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, dates));
@@ -271,9 +271,9 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_motorbike, dates));
@@ -286,10 +286,10 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 17, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 15, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 17, 0, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(57, _sut.CalculateDailyTotalFee(_car, dates));
@@ -300,14 +300,14 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_AtMidnight_ShouldReturnZero()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 0, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_At2359_ShouldReturnZero()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 23, 59, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 23, 59, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
@@ -316,21 +316,21 @@ public class TollCalculatorTests
     [Fact]
     public void CalculateDailyTotalFee_OnJune30_ShouldReturnFee()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 30, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 30, 7, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_OnJuly31_ShouldReturnZero()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 7, 31, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 7, 31, 7, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(0, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
     [Fact]
     public void CalculateDailyTotalFee_OnAugust1_ShouldReturnFee()
     {
-        DateTimeOffset date = new DateTimeOffset(2025, 8, 1, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 8, 1, 7, 0, 0, TimeSpan.FromHours(2));
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, [date]));
     }
 
@@ -341,9 +341,9 @@ public class TollCalculatorTests
     {
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 5, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 19, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 5, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 19, 0, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(18, _sut.CalculateDailyTotalFee(_car, dates));
@@ -361,7 +361,7 @@ public class TollCalculatorTests
     {
         IVehicle vehicle = Substitute.For<IVehicle>();
         vehicle.GetVehicleType().Returns(vehicleType);
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2));
 
         Assert.Equal(0, _sut.CalculateDailyTotalFee(vehicle, [date]));
     }
@@ -371,7 +371,7 @@ public class TollCalculatorTests
     {
         IVehicle vehicle = Substitute.For<IVehicle>();
         vehicle.GetVehicleType().Returns("UnknownType");
-        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero);
+        DateTimeOffset date = new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2));
 
         Assert.Equal(18, _sut.CalculateDailyTotalFee(vehicle, [date]));
     }
@@ -399,7 +399,7 @@ public class TollCalculatorTests
 
         var sut = new TollCalculator(_holidayService, stubRateService);
 
-        int result = sut.CalculateDailyTotalFee(_car, [new DateTimeOffset(2024, 3, 4, 7, 30, 0, TimeSpan.Zero)]);
+        int result = sut.CalculateDailyTotalFee(_car, [new DateTimeOffset(2024, 3, 4, 7, 30, 0, TimeSpan.FromHours(1))]);
 
         Assert.Equal(5, result);
     }
@@ -416,16 +416,16 @@ public class TollCalculatorTests
         // Total: 18 + 18 + 8 + 8 = 52
         DateTimeOffset[] dates =
         [
-            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 7, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 9, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 9, 30, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 10, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2025, 6, 2, 10, 30, 0, TimeSpan.Zero),
+            new DateTimeOffset(2025, 6, 2, 6, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 6, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 7, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 8, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 9, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 9, 30, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 10, 0, 0, TimeSpan.FromHours(2)),
+            new DateTimeOffset(2025, 6, 2, 10, 30, 0, TimeSpan.FromHours(2)),
         ];
 
         Assert.Equal(52, _sut.CalculateDailyTotalFee(_car, dates));

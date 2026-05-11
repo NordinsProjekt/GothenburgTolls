@@ -1,4 +1,4 @@
-﻿using Entities.Interfaces;
+using Entities.Interfaces;
 using Entities.Types;
 using UseCases.Interfaces;
 
@@ -6,6 +6,9 @@ namespace UseCases.HelperClass;
 
 public class TollCalculator(ISwedishHolidayService holidayService, ITollRateService tollRateService) : ITollCalculator
 {
+    private static readonly TimeZoneInfo SwedishTimeZone =
+        TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
+
     /// <summary>
     /// Calculate the total toll fee for one day.
     /// The maximum fee per day is configured via ITollRateService.
@@ -66,7 +69,8 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
     {
         if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
-        TimeOnly time = TimeOnly.FromDateTime(date.DateTime);
+        DateTime swedishTime = TimeZoneInfo.ConvertTime(date, SwedishTimeZone).DateTime;
+        TimeOnly time = TimeOnly.FromTimeSpan(swedishTime.TimeOfDay);
         return tollRateService.GetFeeForTime(time);
     }
 
@@ -76,10 +80,11 @@ public class TollCalculator(ISwedishHolidayService holidayService, ITollRateServ
     /// </summary>
     private bool IsTollFreeDate(DateTimeOffset date)
     {
-        if (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) return true;
-        if (date.Month == 7) return true;
+        DateTime local = TimeZoneInfo.ConvertTime(date, SwedishTimeZone).DateTime;
+        if (local.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday) return true;
+        if (local.Month == 7) return true;
 
-        DateOnly dateOnly = DateOnly.FromDateTime(date.DateTime);
+        DateOnly dateOnly = DateOnly.FromDateTime(local);
         if (holidayService.IsPublicHoliday(dateOnly)) return true;
         if (holidayService.IsDayBeforePublicHoliday(dateOnly)) return true;
 

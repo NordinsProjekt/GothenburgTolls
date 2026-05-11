@@ -37,4 +37,9 @@ public class TollEventService(
         var events = await tollEventRepository.GetUnassignedAsync(count, cancellationToken);
         return events;
     }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await tollEventRepository.DeleteTollEventAsync(id, cancellationToken);
+    }
 }
